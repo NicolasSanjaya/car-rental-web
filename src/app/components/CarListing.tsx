@@ -1,10 +1,10 @@
 "use client";
 import { useState, useEffect, ChangeEvent } from "react";
-import { Car, CarFilters } from "@/app/types/car";
+import { CarListApiResponse, CarFilters } from "@/app/types/car";
 import CarCard from "./CarCard";
 
 export default function CarListing() {
-  const [cars, setCars] = useState<Car[]>([]);
+  const [cars, setCars] = useState<CarListApiResponse["cars"]>();
   const [loading, setLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState<CarFilters>({
     brand: "",
@@ -24,9 +24,11 @@ export default function CarListing() {
       if (filters.year) params.append("year", filters.year);
       if (filters.available) params.append("available", filters.available);
 
-      const response = await fetch(`/api/cars?${params}`);
-      const data: Car[] = await response.json();
-      setCars(data);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/cars?${params}`
+      );
+      const data: CarListApiResponse = await response.json();
+      setCars(data?.cars);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching cars:", error);
@@ -121,7 +123,7 @@ export default function CarListing() {
       {/* Results */}
       <div className="mb-6">
         <p className="text-gray-600">
-          {loading ? "Loading..." : `${cars.length} cars found`}
+          {loading ? "Loading..." : `${cars?.length} cars found`}
         </p>
       </div>
 
@@ -137,13 +139,13 @@ export default function CarListing() {
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {cars.map((car) => (
+          {cars?.map((car) => (
             <CarCard key={car.id} car={car} />
           ))}
         </div>
       )}
 
-      {!loading && cars.length === 0 && (
+      {!loading && cars?.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
             No cars found matching your criteria.

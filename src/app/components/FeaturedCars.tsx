@@ -1,10 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Car } from "@/app/types/car";
+import { CarListApiResponse } from "@/app/types/car";
 import CarCard from "@/app/components/CarCard";
 
 export default function FeaturedCars() {
-  const [cars, setCars] = useState<Car[]>([]);
+  const [cars, setCars] = useState<CarListApiResponse["cars"]>();
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -13,9 +13,11 @@ export default function FeaturedCars() {
 
   const fetchFeaturedCars = async (): Promise<void> => {
     try {
-      const response = await fetch("/api/cars?available=true");
-      const data: Car[] = await response.json();
-      setCars(data.slice(0, 3)); // Show only first 3 cars as featured
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/cars?available=true`
+      );
+      const data: CarListApiResponse = await response.json();
+      setCars(data?.cars?.slice(0, 3)); // Show only first 3 cars as featured
       setLoading(false);
     } catch (error) {
       console.error("Error fetching cars:", error);
@@ -25,9 +27,9 @@ export default function FeaturedCars() {
 
   if (loading) {
     return (
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 featured-cars-gradient">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">
+          <h2 className="text-4xl font-bold text-center mb-12 text-white">
             Featured Cars
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
@@ -44,11 +46,13 @@ export default function FeaturedCars() {
   }
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 featured-cars-gradient">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-12">Featured Cars</h2>
+        <h2 className="text-4xl font-bold text-center mb-12 text-white">
+          Featured Cars
+        </h2>
         <div className="grid md:grid-cols-3 gap-8">
-          {cars.map((car) => (
+          {cars?.map((car) => (
             <CarCard key={car.id} car={car} />
           ))}
         </div>

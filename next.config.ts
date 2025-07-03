@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  env: {
+    MIDTRANS_SERVER_KEY: process.env.MIDTRANS_SERVER_KEY,
+    NEXT_PUBLIC_MIDTRANS_CLIENT_KEY:
+      process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY,
+  },
 };
 
 export default nextConfig;
