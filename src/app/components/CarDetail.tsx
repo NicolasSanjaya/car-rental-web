@@ -17,6 +17,19 @@ export default function CarDetail({ carId }: CarDetailProps) {
     fetchCarDetail();
   }, [carId]);
 
+  useEffect(() => {
+    if (showBooking) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    // Optional: cleanup on unmount
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, [showBooking]);
+
   const fetchCarDetail = async (): Promise<void> => {
     try {
       const response = await fetch(
@@ -33,7 +46,7 @@ export default function CarDetail({ carId }: CarDetailProps) {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className={`container mx-auto px-4 py-8`}>
         <div className="bg-gray-200 animate-pulse rounded-lg h-96 mb-8"></div>
         <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-gray-200 animate-pulse rounded-lg h-64"></div>
@@ -59,7 +72,7 @@ export default function CarDetail({ carId }: CarDetailProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className={`container mx-auto px-4 py-8 `}>
       {/* Car Image */}
       <div className="relative mb-8">
         <Image
@@ -96,7 +109,7 @@ export default function CarDetail({ carId }: CarDetailProps) {
               {car.features?.map((feature, index) => (
                 <span
                   key={index}
-                  className="inline-block bg-gray-100 px-3 py-1 rounded-full text-sm mr-2 mb-2"
+                  className="inline-block bg-gray-100 px-3 py-2 rounded-full text-sm mr-2 mb-2 border border-black text-gray-700"
                 >
                   {feature}
                 </span>
@@ -112,12 +125,12 @@ export default function CarDetail({ carId }: CarDetailProps) {
           )} */}
 
           <div className="flex items-center justify-between">
-            <span className="text-3xl font-bold text-red-500">
+            <span className="text-3xl font-bold text-black">
               ${car.price}/day
             </span>
             <button
               onClick={() => setShowBooking(true)}
-              className={`px-6 py-3 rounded-lg font-semibold transition ${
+              className={`px-6 py-3 rounded-lg font-semibold transition cursor-pointer ${
                 car.is_available
                   ? "bg-red-500 text-white hover:bg-red-600"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -177,7 +190,11 @@ export default function CarDetail({ carId }: CarDetailProps) {
 
       {/* Booking Modal */}
       {showBooking && (
-        <BookingForm car={car} onClose={() => setShowBooking(false)} />
+        <BookingForm
+          car={car}
+          onClose={() => setShowBooking(false)}
+          isOpen={showBooking}
+        />
       )}
     </div>
   );

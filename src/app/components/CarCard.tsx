@@ -1,12 +1,14 @@
 import { Car } from "@/app/types/car";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface CarCardProps {
   car: Car;
 }
 
 export default function CarCard({ car }: CarCardProps) {
+  const router = useRouter();
+
   return (
     <div className="car-card bg-white rounded-lg shadow-lg overflow-hidden">
       <div className="relative">
@@ -40,7 +42,7 @@ export default function CarCard({ car }: CarCardProps) {
           {car.features?.map((feature, index) => (
             <span
               key={index}
-              className="inline-block bg-gray-100 px-2 py-1 rounded text-sm mr-2"
+              className="inline-block bg-gray-100 px-2 py-1 text-sm mr-2 border border-black text-gray-700 rounded-full"
             >
               {feature}
             </span>
@@ -51,15 +53,10 @@ export default function CarCard({ car }: CarCardProps) {
           <span className="text-2xl font-bold text-red-500">
             ${car.price}/day
           </span>
-          <div className="space-x-2">
-            <Link
-              href={`/cars/${car.id}`}
-              className="px-4 py-2 border border-red-500 text-red-500 rounded font-semibold hover:bg-red-50 transition"
-            >
-              View Details
-            </Link>
+          <div className="space-x-2 flex items-center justify-center">
             <button
-              className={`px-4 py-2 rounded font-semibold transition ${
+              onClick={() => router.push(`/cars/${car.id}`)}
+              className={`px-4 py-2 rounded font-semibold transition cursor-pointer ${
                 car.is_available
                   ? "bg-red-500 text-white hover:bg-red-600"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"

@@ -2,11 +2,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import { BookingData } from "@/app/types/booking";
+import { Car } from "../types/car";
 
 interface MetaMaskPaymentProps {
   bookingData: BookingData;
   onSuccess: () => void;
   onError: (error: string) => void;
+  car: Car;
 }
 
 declare global {
@@ -19,6 +21,7 @@ export default function MetaMaskPayment({
   bookingData,
   onSuccess,
   onError,
+  car,
 }: MetaMaskPaymentProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [account, setAccount] = useState<string>("");
@@ -140,19 +143,27 @@ export default function MetaMaskPayment({
       });
 
       // Save transaction to backend
-      await fetch("/api/payment/metamask", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...bookingData,
-          transactionHash,
-          fromAddress: account,
-          ethAmount: parseFloat(ethAmount),
-        }),
-      });
-
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/payment`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            paymentData: {
+              ...bookingData,
+              car,
+              txHash: transactionHash,
+              fromAddress: account,
+              recipientAddress: "0xEe676dfC6EfDAaAbbA0A261c00779bB42D62E247",
+              amount: parseFloat(ethAmount),
+            },
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log("data", data);
       onSuccess();
     } catch (error: any) {
       console.error("Payment error:", error);

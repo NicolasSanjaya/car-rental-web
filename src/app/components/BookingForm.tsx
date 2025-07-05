@@ -1,15 +1,21 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Car } from "@/app/types/car";
 import { BookingData } from "@/app/types/booking";
 import MidtransPayment from "@/app/components/MidtransPayment";
 import MetaMaskPayment from "@/app/components/MetaMaskPayment";
+import { toast } from "react-toastify";
 interface BookingFormProps {
   car: Car;
   onClose: () => void;
+  isOpen: boolean;
 }
 
-export default function BookingForm({ car, onClose }: BookingFormProps) {
+export default function BookingForm({
+  car,
+  onClose,
+  isOpen,
+}: BookingFormProps) {
   const [formData, setFormData] = useState({
     startDate: "",
     endDate: "",
@@ -22,6 +28,8 @@ export default function BookingForm({ car, onClose }: BookingFormProps) {
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [showPayment, setShowPayment] = useState<boolean>(false);
 
+  const modalRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (formData.startDate && formData.endDate) {
       const start = new Date(formData.startDate);
@@ -32,6 +40,26 @@ export default function BookingForm({ car, onClose }: BookingFormProps) {
       setTotalAmount(diffDays * car.price);
     }
   }, [formData.startDate, formData.endDate, car.price]);
+
+  // Detect click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,15 +81,18 @@ export default function BookingForm({ car, onClose }: BookingFormProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+      <div
+        className="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+        ref={modalRef}
+      >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">
             Book {car.brand} {car.model}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl"
+            className="text-gray-500 hover:text-gray-700 text-2xl cursor-pointer"
           >
             ×
           </button>
@@ -80,6 +111,7 @@ export default function BookingForm({ car, onClose }: BookingFormProps) {
                   onChange={(e) =>
                     setFormData({ ...formData, startDate: e.target.value })
                   }
+                  min={new Date().toISOString().split("T")[0]}
                   className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-red-500"
                   required
                 />
@@ -94,6 +126,7 @@ export default function BookingForm({ car, onClose }: BookingFormProps) {
                   onChange={(e) =>
                     setFormData({ ...formData, endDate: e.target.value })
                   }
+                  min={formData.startDate}
                   className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-red-500"
                   required
                 />
@@ -230,12 +263,13 @@ export default function BookingForm({ car, onClose }: BookingFormProps) {
             ) : (
               <MetaMaskPayment
                 bookingData={bookingData}
+                car={car}
                 onSuccess={() => {
-                  alert("Payment successful!");
+                  toast.success("Payment successful!");
                   onClose();
                 }}
                 onError={(error) => {
-                  alert("Payment failed: " + error);
+                  toast.error("Payment failed: " + error);
                   setShowPayment(false);
                 }}
               />
