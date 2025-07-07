@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { useForm } from "@/app/context/RegisterContext";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
+  const { setFormDataContext } = useForm();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -43,50 +45,35 @@ export default function RegisterPage() {
 
     setIsLoading(true);
 
+    setFormDataContext({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+    });
+
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`,
+      const otpResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_OTP_AUTH_URL}/request-otp`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            full_name: formData.name,
-            email: formData.email,
-            password: formData.password,
-          }),
+          body: JSON.stringify({ email: formData?.email }),
         }
       );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success("Registration successful! Please verify your email.");
-        const otpResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_API_OTP_AUTH_URL}/request-otp`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email: formData.email }),
-          }
-        );
-        const otpData = await otpResponse.json();
-        if (otpResponse.ok)
-          if (otpData.status === "success") {
-            toast.success("OTP sent successfully!");
-          }
-        router.push(`/otp?email=${encodeURIComponent(formData.email)}`);
-      } else {
-        toast.error(data.message || "Registration failed");
-      }
+      const otpData = await otpResponse.json();
+      console.log("OTP Response:", otpResponse);
+      console.log("OTP Data:", otpData);
+      if (otpResponse.ok)
+        if (otpData.status === "success") {
+          toast.success("OTP sent successfully!");
+        }
     } catch (error) {
       console.error("Registration error:", error);
-      toast.error("An error occurred. Please try again.");
+      toast.error("An error occurred while creating your account");
     } finally {
-      setIsLoading(false);
+      router.push("/otp");
     }
   };
 

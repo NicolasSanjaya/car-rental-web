@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { useForm } from "@/app/context/RegisterContext";
+import { useUser } from "@/app/context/UserContext";
 
 export default function OTPPage() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -12,11 +14,11 @@ export default function OTPPage() {
   const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef<HTMLInputElement[]>([]);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const email = searchParams.get("email");
+  const { formData } = useForm();
+  const { setUser } = useUser();
 
   useEffect(() => {
-    if (!email) {
+    if (!formData?.email) {
       router.push("/register");
       return;
     }
@@ -32,7 +34,7 @@ export default function OTPPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [email, router]);
+  }, [formData?.email, router]);
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) return;
@@ -68,7 +70,7 @@ export default function OTPPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
+      const verifyOtp = await fetch(
         `${process.env.NEXT_PUBLIC_API_OTP_AUTH_URL}/verify-otp`,
         {
           method: "POST",
@@ -76,24 +78,44 @@ export default function OTPPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email,
+            email: formData?.email,
             otp: otpCode,
           }),
         }
       );
+      const verifyOtpData = await verifyOtp.json();
+      console.log("OTP Verify:", verifyOtpData);
+      if (verifyOtp.message === "OTP verified successfully") {
+        toast.success("OTP verified successfully!");
+        // Register the user after OTP verification
+        const register = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              full_name: formData?.name,
+              email: formData?.email,
+              password: formData?.password,
+            }),
+          }
+        );
 
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success("Email verified successfully!");
-        localStorage.setItem("token", data.token);
-        router.push("/");
+        const registerData = await register.json();
+        console.log("Registration:", registerData);
+        localStorage.setItem("token", registerData.data.token);
+        setUser({
+          email: formData?.email || "",
+          full_name: formData?.name || "",
+        });
+        router.push("/dashboard");
       } else {
-        toast.error(data.message || "Invalid OTP");
-        setOtp(["", "", "", "", "", ""]);
+        toast.error(verifyOtpData.message || "OTP verification failed");
       }
     } catch (error) {
-      console.error("OTP verification error:", error);
+      console.error("Registration error:", error);
       toast.error("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
@@ -106,12 +128,12 @@ export default function OTPPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/resend-otp", {
+      const response = await fetch("/request-otp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: formData?.email }),
       });
 
       const data = await response.json();
@@ -163,7 +185,7 @@ export default function OTPPage() {
           <p className="text-gray-400 mb-2">
             We&apos;ve sent a 6-digit code to
           </p>
-          <p className="text-white font-semibold">{email}</p>
+          <p className="text-white font-semibold">{formData?.email}</p>
         </div>
 
         <div className="bg-gray-800 rounded-xl p-8 shadow-2xl">
