@@ -3,21 +3,21 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "../context/UserContext";
 
 export default function Navbar() {
-  const { user, logout, checkAuthStatus, loading } = useUser();
+  const { user, logout, loading } = useUser();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    checkAuthStatus().catch((err) => {
-      console.error("Auth check failed:", err);
-      router.push("/login");
-    });
-  }, []);
+  // useEffect(() => {
+  //   checkAuthStatus().catch((err) => {
+  //     console.error("Auth check failed:", err);
+  //     router.push("/login");
+  //   });
+  // }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -59,14 +59,14 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center space-x-2 hover:text-red-500 transition"
+                className="flex items-center space-x-2  transition"
               >
                 <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
                   <span className="text-sm font-bold">
                     {user.full_name.charAt(0).toUpperCase()}
                   </span>
                 </div>
-                <span>{user.full_name}</span>
+                <span className="hover:text-red-500">{user.full_name}</span>
                 <svg
                   className={`w-4 h-4 transition-transform ${
                     showUserMenu ? "rotate-180" : ""

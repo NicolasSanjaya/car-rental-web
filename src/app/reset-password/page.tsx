@@ -1,138 +1,143 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-toastify";
-import { useForm } from "@/app/context/RegisterContext";
 
-export default function RegisterPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+export default function ResetPasswordPage() {
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [token, setToken] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+
   const router = useRouter();
-  const { setFormDataContext } = useForm();
+  const searchParams = useSearchParams();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const validateForm = () => {
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match");
-      return false;
+  useEffect(() => {
+    const tokenFromUrl = searchParams.get("token");
+    if (tokenFromUrl) {
+      setToken(tokenFromUrl);
+    } else {
+      toast.error("Invalid reset link");
+      router.push("/login");
     }
-    if (formData.password.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return false;
-    }
-    return true;
-  };
+  }, [searchParams, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
 
     setIsLoading(true);
 
-    setFormDataContext({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-    });
-
     try {
-      const otpResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_OTP_AUTH_URL}/request-otp`,
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email: formData?.email }),
+          body: JSON.stringify({ token, newPassword }),
         }
       );
-      const otpData = await otpResponse.json();
-      console.log("OTP Response:", otpResponse);
-      console.log("OTP Data:", otpData);
-      if (otpResponse.ok) {
-        toast.success("OTP sent successfully!");
-        router.push("/otp");
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setIsSuccess(true);
+        toast.success("Password reset successful!");
       } else {
-        toast.error("Failed to send OTP. Please try again.");
-        setIsLoading(false);
-        return;
+        toast.error(data.message || "Failed to reset password");
       }
     } catch (error) {
-      console.error("Registration error:", error);
-      toast.error("An error occurred while creating your account");
+      console.error("Reset password error:", error);
+      toast.error("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center px-4">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+              <svg
+                className="h-6 w-6 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-2">
+              Password Reset Successful!
+            </h2>
+            <p className="text-gray-400">
+              Your password has been successfully reset
+            </p>
+          </div>
+
+          <div className="bg-gray-800 rounded-xl p-8 shadow-2xl">
+            <div className="text-center space-y-4">
+              <p className="text-gray-300">
+                You can now sign in with your new password.
+              </p>
+
+              <Link
+                href="/login"
+                className="block w-full text-center bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition duration-200"
+              >
+                Sign In
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center px-4">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
-          <p className="text-gray-400">Join Elite Sports Car Rental</p>
+          <h2 className="text-3xl font-bold text-white mb-2">Reset Password</h2>
+          <p className="text-gray-400">Enter your new password below</p>
         </div>
 
         <div className="bg-gray-800 rounded-xl p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Full Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your full name"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Password
+                New Password
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
                   className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent pr-12"
-                  placeholder="Create a password"
+                  placeholder="Enter new password"
                   required
                 />
                 <button
@@ -181,16 +186,15 @@ export default function RegisterPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Confirm Password
+                Confirm New Password
               </label>
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent pr-12"
-                  placeholder="Confirm your password"
+                  placeholder="Confirm new password"
                   required
                 />
                 <button
@@ -237,27 +241,6 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                className="w-4 h-4 text-red-500 bg-gray-700 border-gray-600 rounded focus:ring-red-500"
-                required
-              />
-              <label className="ml-2 text-sm text-gray-300">
-                I agree to the{" "}
-                <Link href="/terms" className="text-red-500 hover:text-red-400">
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link
-                  href="/privacy"
-                  className="text-red-500 hover:text-red-400"
-                >
-                  Privacy Policy
-                </Link>
-              </label>
-            </div>
-
             <button
               type="submit"
               disabled={isLoading}
@@ -266,13 +249,13 @@ export default function RegisterPage() {
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               ) : (
-                "Create Account"
+                "Reset Password"
               )}
             </button>
 
             <div className="text-center">
               <p className="text-gray-400">
-                Already have an account?{" "}
+                Remember your password?{" "}
                 <Link
                   href="/login"
                   className="text-red-500 hover:text-red-400 font-medium"

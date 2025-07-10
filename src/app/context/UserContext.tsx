@@ -1,11 +1,18 @@
 // app/context/UserContext.tsx
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 
 type User = {
   email: string;
   full_name: string;
+  uid: number; // Assuming uid is a unique identifier for the user
 };
 
 type UserContextType = {
@@ -21,7 +28,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const checkAuthStatus = async () => {
     setIsLoading(true);
@@ -29,11 +36,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       const token = localStorage.getItem("token");
       if (token) {
         // Verify token with your backend
-        const response = await fetch("/api/auth/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (response.ok) {
           const userData = await response.json();
@@ -49,6 +59,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(false);
     }
   };
+
+  // Call checkAuthStatus on mount to verify user session
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
 
   const logout = () => setUser(null);
 

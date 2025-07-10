@@ -37,6 +37,7 @@ export default function CarListing() {
   };
 
   const handleFilterChange = (key: keyof CarFilters, value: string): void => {
+    console.log(key, value);
     setFilters((prev) => ({
       ...prev,
       [key]: value,

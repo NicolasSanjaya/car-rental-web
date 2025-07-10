@@ -85,7 +85,7 @@ export default function OTPPage() {
       );
       const verifyOtpData = await verifyOtp.json();
       console.log("OTP Verify:", verifyOtpData);
-      if (verifyOtp.message === "OTP verified successfully") {
+      if (verifyOtp.ok) {
         toast.success("OTP verified successfully!");
         // Register the user after OTP verification
         const register = await fetch(
@@ -106,6 +106,7 @@ export default function OTPPage() {
         const registerData = await register.json();
         console.log("Registration:", registerData);
         localStorage.setItem("token", registerData.data.token);
+        console.log("Token:", registerData.data.token);
         setUser({
           email: formData?.email || "",
           full_name: formData?.name || "",

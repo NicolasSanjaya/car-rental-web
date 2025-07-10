@@ -27,7 +27,6 @@ export default function BookingForm({
   const [totalDays, setTotalDays] = useState<number>(0);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [showPayment, setShowPayment] = useState<boolean>(false);
-
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -63,6 +62,7 @@ export default function BookingForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (totalDays > 0 && formData.customerName && formData.customerEmail) {
       setShowPayment(true);
     }

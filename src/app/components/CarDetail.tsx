@@ -3,6 +3,9 @@ import { useState, useEffect } from "react";
 import { CarApiResponse, Car } from "@/app/types/car";
 import BookingForm from "@/app/components/BookingForm";
 import Image from "next/image";
+import { toast } from "react-toastify";
+import { useUser } from "../context/UserContext";
+import { useRouter } from "next/navigation";
 
 interface CarDetailProps {
   carId: string;
@@ -12,6 +15,8 @@ export default function CarDetail({ carId }: CarDetailProps) {
   const [car, setCar] = useState<Car>();
   const [loading, setLoading] = useState<boolean>(true);
   const [showBooking, setShowBooking] = useState<boolean>(false);
+  const { user } = useUser();
+  const router = useRouter();
 
   useEffect(() => {
     fetchCarDetail();
@@ -129,7 +134,14 @@ export default function CarDetail({ carId }: CarDetailProps) {
               ${car.price}/day
             </span>
             <button
-              onClick={() => setShowBooking(true)}
+              onClick={() => {
+                if (!user) {
+                  toast.error("Please login first");
+                  router.push("/login");
+                  return;
+                }
+                setShowBooking(true);
+              }}
               className={`px-6 py-3 rounded-lg font-semibold transition cursor-pointer ${
                 car.is_available
                   ? "bg-red-500 text-white hover:bg-red-600"

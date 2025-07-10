@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { useUser } from "@/app/context/UserContext";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -11,24 +12,35 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const { setUser } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       const data = await response.json();
 
+      console.log("Login response:", response);
+      console.log("Login data:", data);
+
       if (response.ok) {
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", data.data.token);
+        setUser({
+          email: data.data.user.email,
+          full_name: data.data.user.full_name,
+        });
         toast.success("Login successful!");
         router.push("/");
       } else {
