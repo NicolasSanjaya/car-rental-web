@@ -12,15 +12,9 @@ export default function Navbar() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const router = useRouter();
 
-  // useEffect(() => {
-  //   checkAuthStatus().catch((err) => {
-  //     console.error("Auth check failed:", err);
-  //     router.push("/login");
-  //   });
-  // }, []);
+  console.log("User in Navbar:", user);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
     logout();
     setShowUserMenu(false);
     router.push("/");
@@ -40,18 +34,29 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center space-x-6">
-          <Link href="/" className="hover:text-red-500 transition">
-            Home
-          </Link>
-          <Link href="/cars" className="hover:text-red-500 transition">
-            Cars
-          </Link>
-          <Link href="/about" className="hover:text-red-500 transition">
-            About
-          </Link>
-          <Link href="/contact" className="hover:text-red-500 transition">
-            Contact
-          </Link>
+          {user?.role === "admin" && (
+            <Link href="/dashboard" className="hover:text-red-500 transition">
+              {" "}
+              Dashboard
+            </Link>
+          )}
+
+          {user?.role === "user" && (
+            <>
+              <Link href="/" className="hover:text-red-500 transition">
+                Home
+              </Link>
+              <Link href="/cars" className="hover:text-red-500 transition">
+                Cars
+              </Link>
+              <Link href="/about" className="hover:text-red-500 transition">
+                About
+              </Link>
+              <Link href="/contact" className="hover:text-red-500 transition">
+                Contact
+              </Link>
+            </>
+          )}
 
           {loading ? (
             <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
@@ -93,13 +98,15 @@ export default function Navbar() {
                   >
                     Profile
                   </Link>
-                  <Link
-                    href="/bookings"
-                    className="block px-4 py-2 hover:bg-gray-100"
-                    onClick={() => setShowUserMenu(false)}
-                  >
-                    My Bookings
-                  </Link>
+                  {user.role === "user" && (
+                    <Link
+                      href="/bookings"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      My Bookings
+                    </Link>
+                  )}
                   <hr className="my-2" />
                   <button
                     onClick={handleLogout}

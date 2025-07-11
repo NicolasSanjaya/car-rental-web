@@ -17,12 +17,12 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -38,11 +38,16 @@ export default function LoginPage() {
       if (response.ok) {
         localStorage.setItem("token", data.data.token);
         setUser({
+          uid: data.data.user.id,
           email: data.data.user.email,
           full_name: data.data.user.full_name,
         });
         toast.success("Login successful!");
-        router.push("/");
+        if (data.data.user.role === "admin") {
+          router.push("/dashboard");
+        } else if (data.data.user.role === "user") {
+          router.push("/");
+        }
       } else {
         toast.error(data.message || "Login failed");
       }

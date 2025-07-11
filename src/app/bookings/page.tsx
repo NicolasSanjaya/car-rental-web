@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   Calendar,
   Car,
   User,
-  Mail,
-  Phone,
   CreditCard,
   Clock,
   CheckCircle,
@@ -21,7 +19,6 @@ import { toast } from "react-toastify";
 import Image from "next/image";
 
 interface Booking {
-  id: string;
   uid: string;
   car_id: string;
   start_date: string;
@@ -29,7 +26,7 @@ interface Booking {
   full_name: string;
   email: string;
   phone_number: string;
-  payment: "metamask" | "midtrans";
+  payment_method: "metamask" | "midtrans";
   is_paid: boolean;
   tx_hash: string | null;
   created_at: string;
@@ -48,6 +45,7 @@ export default function BookingPage() {
   const [showModal, setShowModal] = useState(false);
   const [filter, setFilter] = useState<"all" | "paid" | "unpaid">("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (user) {
@@ -58,6 +56,38 @@ export default function BookingPage() {
   useEffect(() => {
     filterBookings();
   }, [bookings, filter, searchTerm]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        setShowModal(false);
+      }
+    }
+
+    if (showModal) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showModal, modalRef]);
+
+  useEffect(() => {
+    if (showModal) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    // Optional: cleanup on unmount
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, [showModal]);
 
   const fetchBookings = async () => {
     try {
@@ -73,6 +103,7 @@ export default function BookingPage() {
 
       if (response.ok) {
         const data = await response.json();
+        console.log("data", data);
         setBookings(data.bookings);
       } else {
         toast.error("Failed to fetch bookings");
@@ -100,8 +131,8 @@ export default function BookingPage() {
       filtered = filtered.filter(
         (booking) =>
           booking.car_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          booking.car_brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          booking.id.toLowerCase().includes(searchTerm.toLowerCase())
+          booking.car_brand?.toLowerCase().includes(searchTerm.toLowerCase())
+        // || booking.uid.includes(searchTerm.toLowerCase())
       );
     }
 
@@ -230,7 +261,7 @@ export default function BookingPage() {
             <div className="grid gap-6">
               {filteredBookings.map((booking) => (
                 <div
-                  key={booking.id}
+                  key={booking.uid}
                   className="bg-gray-800 rounded-xl p-6 shadow-2xl border border-gray-700 hover:border-gray-600 transition-colors"
                 >
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -255,7 +286,7 @@ export default function BookingPage() {
                         </h3>
                         <p className="text-gray-400">{booking.car_brand}</p>
                         <p className="text-sm text-gray-500">
-                          ID: {booking.id}
+                          ID: {booking.uid}
                         </p>
                       </div>
                     </div>
@@ -304,7 +335,7 @@ export default function BookingPage() {
                   <div className="mt-4 pt-4 border-t border-gray-700">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <div className="flex items-center gap-4 text-sm text-gray-400">
-                        <span>Payment: {booking.payment}</span>
+                        <span>Payment: {booking.payment_method}</span>
                         {booking.total_price && (
                           <span className="text-white font-semibold">
                             {formatCurrency(booking.total_price)}
@@ -327,8 +358,11 @@ export default function BookingPage() {
 
       {/* Booking Details Modal */}
       {showModal && selectedBooking && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div
+            className="bg-gray-800 rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            ref={modalRef}
+          >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-bold text-white">Booking Details</h3>
               <button
@@ -371,7 +405,9 @@ export default function BookingPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-400">Booking ID:</span>
-                    <p className="text-white font-mono">{selectedBooking.id}</p>
+                    <p className="text-white font-mono">
+                      {selectedBooking.uid}
+                    </p>
                   </div>
                   <div>
                     <span className="text-gray-400">Duration:</span>
@@ -430,7 +466,7 @@ export default function BookingPage() {
                   <div>
                     <span className="text-gray-400">Payment Method:</span>
                     <p className="text-white capitalize">
-                      {selectedBooking.payment}
+                      {selectedBooking.payment_method}
                     </p>
                   </div>
                   <div>
