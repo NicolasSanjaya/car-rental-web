@@ -42,14 +42,19 @@ export default function MidtransPayment({
 
   const createPayment = async () => {
     setLoading(true);
+
+    console.log("Creating payment with booking data:", bookingData);
     try {
-      const response = await fetch("/api/payment/midtrans", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookingData),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/payment/midtrans`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ bookingData }),
+        }
+      );
 
       const data = await response.json();
 
@@ -107,6 +112,11 @@ export default function MidtransPayment({
       >
         {loading ? "Processing..." : "Pay with Midtrans"}
       </button>
+      {loading && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="text-white text-xl">Loading...</div>
+        </div>
+      )}
     </div>
   );
 }

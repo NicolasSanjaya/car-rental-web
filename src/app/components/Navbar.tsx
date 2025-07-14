@@ -34,14 +34,21 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center space-x-6">
-          {user?.role === "admin" && (
-            <Link href="/dashboard" className="hover:text-red-500 transition">
-              {" "}
-              Dashboard
-            </Link>
-          )}
-
-          {user?.role === "user" && (
+          {user?.role === "admin" ? (
+            <>
+              <Link href="/dashboard" className="hover:text-red-500 transition">
+                {" "}
+                Dashboard
+              </Link>
+              <Link
+                href="/cars-management"
+                className="hover:text-red-500 transition"
+              >
+                {" "}
+                Cars Management
+              </Link>
+            </>
+          ) : (
             <>
               <Link href="/" className="hover:text-red-500 transition">
                 Home

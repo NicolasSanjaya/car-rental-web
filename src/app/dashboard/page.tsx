@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Car,
   Calendar,
@@ -18,7 +18,6 @@ import { toast } from "react-toastify";
 
 interface Booking {
   id: string;
-  uid: string;
   car_id: string;
   start_date: string;
   end_date: string;
@@ -28,7 +27,7 @@ interface Booking {
   payment_method: "metamask" | "midtrans";
   is_paid: boolean;
   tx_hash: string | null;
-  total_price: number;
+  amount: number;
   created_at: string;
   updated_at: string;
   car_name?: string;
@@ -76,10 +75,45 @@ export default function AdminDashboard() {
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  console.log(bookings);
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        setShowBookingModal(false);
+      }
+    }
+
+    if (showBookingModal) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showBookingModal, modalRef]);
+
+  useEffect(() => {
+    if (showBookingModal) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    // Optional: cleanup on unmount
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, [showBookingModal]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -135,7 +169,7 @@ export default function AdminDashboard() {
   const calculateStats = (bookingData: Booking[]) => {
     const totalBookings = bookingData.length;
     const totalRevenue = bookingData.reduce(
-      (sum, booking) => sum + (booking.total_price || 0),
+      (sum, booking) => sum + (booking.amount || 0),
       0
     );
     const paidBookings = bookingData.filter(
@@ -180,7 +214,7 @@ export default function AdminDashboard() {
 
   const updateBookingStatus = async (bookingId: string, isPaid: boolean) => {
     try {
-      const token = localStorage.getItem("admin_token");
+      const token = localStorage.getItem("token");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/bookings/${bookingId}/status`,
         {
@@ -427,7 +461,7 @@ export default function AdminDashboard() {
                   <tr key={booking.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {booking.uid}
+                        {booking.id}
                       </div>
                       <div className="text-sm text-gray-500">
                         {/* Tambahkan created_at */}
@@ -468,7 +502,7 @@ export default function AdminDashboard() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {booking.payment_method === "midtrans" && (
                         <div className="text-sm font-medium text-gray-900">
-                          {formatCurrency(booking.total_price)}
+                          {formatCurrency(booking.amount)}
                         </div>
                       )}
                       <div className="text-sm text-gray-500 capitalize">
@@ -519,7 +553,7 @@ export default function AdminDashboard() {
                           )}
                         </button>
                         <button
-                          onClick={() => deleteBooking(booking.uid)}
+                          onClick={() => deleteBooking(booking.id)}
                           className="text-red-600 hover:text-red-900"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -567,8 +601,11 @@ export default function AdminDashboard() {
 
         {/* Booking Detail Modal */}
         {showBookingModal && selectedBooking && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div
+              className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              ref={modalRef}
+            >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-gray-900">
                   Booking Details
@@ -588,7 +625,7 @@ export default function AdminDashboard() {
                       Booking ID
                     </label>
                     <p className="mt-1 text-sm text-gray-900 font-mono">
-                      {selectedBooking.uid}
+                      {selectedBooking.id}
                     </p>
                   </div>
                   <div>
@@ -665,7 +702,7 @@ export default function AdminDashboard() {
                         Total Price
                       </label>
                       <p className="mt-1 text-sm text-gray-900 font-bold">
-                        {formatCurrency(selectedBooking.total_price)}
+                        {formatCurrency(selectedBooking.amount)}
                       </p>
                     </div>
                   )}
@@ -713,7 +750,7 @@ export default function AdminDashboard() {
                   </button>
                   <button
                     onClick={() => {
-                      deleteBooking(selectedBooking.uid);
+                      deleteBooking(selectedBooking.id);
                       setShowBookingModal(false);
                     }}
                     className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"

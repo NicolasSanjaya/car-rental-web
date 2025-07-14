@@ -15,7 +15,8 @@ export function middleware(request: NextRequest) {
   if (
     role === "admin" &&
     pathname !== "/dashboard" &&
-    pathname !== "/profile"
+    pathname !== "/profile" &&
+    pathname !== "/cars-management"
   ) {
     console.log("⛔ Admin tidak boleh akses route ini, redirect ke /dashboard");
     return NextResponse.redirect(new URL("/dashboard", request.url));

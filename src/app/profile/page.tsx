@@ -107,21 +107,21 @@ export default function ProfilePage() {
         body = {
           full_name: formData.full_name,
           email: user?.email,
-          id: user?.uid,
+          id: user?.id,
         };
       } else if (field === "email") {
         endpoint = `${process.env.NEXT_PUBLIC_API_URL}/api/profile/update`;
         body = {
           email: formData.email,
           full_name: user?.full_name,
-          id: user?.uid,
+          id: user?.id,
         };
       } else if (field === "password") {
         endpoint = `${process.env.NEXT_PUBLIC_API_URL}/api/profile/change-password`;
         body = {
           current_password: formData.current_password,
           new_password: formData.new_password,
-          id: user?.uid,
+          id: user?.id,
         };
       }
 

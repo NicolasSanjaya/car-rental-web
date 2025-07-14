@@ -19,7 +19,7 @@ import { toast } from "react-toastify";
 import Image from "next/image";
 
 interface Booking {
-  uid: string;
+  id: string;
   car_id: string;
   start_date: string;
   end_date: string;
@@ -93,7 +93,7 @@ export default function BookingPage() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/user/${user?.uid}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/user/${user?.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -131,8 +131,8 @@ export default function BookingPage() {
       filtered = filtered.filter(
         (booking) =>
           booking.car_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          booking.car_brand?.toLowerCase().includes(searchTerm.toLowerCase())
-        // || booking.uid.includes(searchTerm.toLowerCase())
+          booking.car_brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          booking.id.includes(searchTerm.toLowerCase())
       );
     }
 
@@ -261,7 +261,7 @@ export default function BookingPage() {
             <div className="grid gap-6">
               {filteredBookings.map((booking) => (
                 <div
-                  key={booking.uid}
+                  key={booking.id}
                   className="bg-gray-800 rounded-xl p-6 shadow-2xl border border-gray-700 hover:border-gray-600 transition-colors"
                 >
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -286,7 +286,7 @@ export default function BookingPage() {
                         </h3>
                         <p className="text-gray-400">{booking.car_brand}</p>
                         <p className="text-sm text-gray-500">
-                          ID: {booking.uid}
+                          ID: {booking.id}
                         </p>
                       </div>
                     </div>
@@ -405,9 +405,7 @@ export default function BookingPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-400">Booking ID:</span>
-                    <p className="text-white font-mono">
-                      {selectedBooking.uid}
-                    </p>
+                    <p className="text-white font-mono">{selectedBooking.id}</p>
                   </div>
                   <div>
                     <span className="text-gray-400">Duration:</span>

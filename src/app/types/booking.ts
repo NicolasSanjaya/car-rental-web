@@ -1,13 +1,15 @@
 export interface BookingData {
-  carId: number;
-  startDate: string;
-  endDate: string;
-  totalDays: number;
-  totalAmount: number;
+  car_id: number;
+  start_date: string;
+  end_date: string;
+  total_days: number;
+  totalAmount: string;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  paymentMethod: "midtrans" | "metamask";
+  payment_method: "midtrans" | "metamask";
+  user_id: number;
+  carName: string;
 }
 
 export interface MidtransConfig {

@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 type User = {
   email: string;
   full_name: string;
-  uid: number; // Assuming uid is a unique identifier for the user
+  id: number; // Assuming id is a unique identifier for the user
   role: "admin" | "user"; // Assuming roles are either 'admin' or 'user'
 };
 

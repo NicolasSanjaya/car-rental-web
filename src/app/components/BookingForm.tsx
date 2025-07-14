@@ -5,6 +5,7 @@ import { BookingData } from "@/app/types/booking";
 import MidtransPayment from "@/app/components/MidtransPayment";
 import MetaMaskPayment from "@/app/components/MetaMaskPayment";
 import { toast } from "react-toastify";
+import { useUser } from "../context/UserContext";
 interface BookingFormProps {
   car: Car;
   onClose: () => void;
@@ -25,9 +26,10 @@ export default function BookingForm({
     paymentMethod: "midtrans" as "midtrans" | "metamask",
   });
   const [totalDays, setTotalDays] = useState<number>(0);
-  const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [totalAmount, setTotalAmount] = useState<string>("");
   const [showPayment, setShowPayment] = useState<boolean>(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const { user } = useUser();
 
   useEffect(() => {
     if (formData.startDate && formData.endDate) {
@@ -36,9 +38,22 @@ export default function BookingForm({
       const diffTime = Math.abs(end.getTime() - start.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       setTotalDays(diffDays);
-      setTotalAmount(diffDays * car.price);
+      setTotalAmount((diffDays * car.price).toString());
     }
   }, [formData.startDate, formData.endDate, car.price]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    // Optional: cleanup on unmount
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, [isOpen]);
 
   // Detect click outside
   useEffect(() => {
@@ -69,15 +84,17 @@ export default function BookingForm({
   };
 
   const bookingData: BookingData = {
-    carId: car.id,
-    startDate: formData.startDate,
-    endDate: formData.endDate,
-    totalDays,
-    totalAmount,
+    car_id: car.id,
+    start_date: formData.startDate,
+    end_date: formData.endDate,
+    total_days: totalDays,
+    totalAmount: totalAmount.toString(),
     customerName: formData.customerName,
     customerEmail: formData.customerEmail,
     customerPhone: formData.customerPhone,
-    paymentMethod: formData.paymentMethod,
+    payment_method: formData.paymentMethod,
+    user_id: user?.id || 0,
+    carName: `${car.brand} ${car.model}`,
   };
 
   return (

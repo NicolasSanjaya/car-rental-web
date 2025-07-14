@@ -38,7 +38,7 @@ export default function LoginPage() {
       if (response.ok) {
         localStorage.setItem("token", data.data.token);
         setUser({
-          uid: data.data.user.id,
+          id: data.data.user.id,
           email: data.data.user.email,
           full_name: data.data.user.full_name,
         });
