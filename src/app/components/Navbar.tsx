@@ -3,16 +3,20 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "../context/UserContext";
 
 export default function Navbar() {
-  const { user, logout, loading } = useUser();
+  const { user, logout, loading, checkAuthStatus } = useUser();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const router = useRouter();
 
   console.log("User in Navbar:", user);
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
 
   const handleLogout = () => {
     logout();

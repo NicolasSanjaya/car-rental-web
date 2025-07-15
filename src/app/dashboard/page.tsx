@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState, useEffect, useRef } from "react";
 import {
-  Car,
   Calendar,
   DollarSign,
   Clock,
@@ -15,36 +15,10 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { toast } from "react-toastify";
-
-interface Booking {
-  id: string;
-  car_id: string;
-  start_date: string;
-  end_date: string;
-  full_name: string;
-  email: string;
-  phone_number: string;
-  payment_method: "metamask" | "midtrans";
-  is_paid: boolean;
-  tx_hash: string | null;
-  amount: number;
-  created_at: string;
-  updated_at: string;
-  car_name?: string;
-  car_brand?: string;
-  car_image?: string;
-}
-
-interface Car {
-  id: number;
-  car_id: string;
-  name: string;
-  brand: string;
-  price_per_day: number;
-  image_url: string;
-  available: boolean;
-  created_at: string;
-}
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { Booking } from "../types/booking";
+import { Car } from "../types/car";
 
 interface Stats {
   totalBookings: number;
@@ -109,7 +83,6 @@ export default function AdminDashboard() {
       document.body.classList.remove("overflow-hidden");
     }
 
-    // Optional: cleanup on unmount
     return () => {
       document.body.classList.remove("overflow-hidden");
     };
@@ -204,6 +177,14 @@ export default function AdminDashboard() {
     });
   };
 
+  // const formatDateShort = (dateString: string) => {
+  //   return new Date(dateString).toLocaleDateString("id-ID", {
+  //     day: "numeric",
+  //     month: "short",
+  //     year: "numeric",
+  //   });
+  // };
+
   const calculateDays = (startDate: string, endDate: string) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -275,6 +256,53 @@ export default function AdminDashboard() {
     }
   };
 
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+
+    doc.text("Bookings Report", 14, 20);
+
+    const tableColumn = [
+      "No",
+      "Booking ID",
+      "Name",
+      "Email",
+      "Car",
+      "Start",
+      "End",
+      "Days",
+      "Amount",
+      "Status",
+    ];
+
+    const tableRows: any[] = [];
+
+    filteredBookings.forEach((booking, index) => {
+      const rowData = [
+        index + 1,
+        booking.id,
+        booking.full_name,
+        booking.email,
+        `${booking.car_name || "-"} (${booking.car_brand || "-"})`,
+        formatDate(booking.start_date),
+        formatDate(booking.end_date),
+        calculateDays(booking.start_date, booking.end_date),
+        formatCurrency(booking.amount),
+        booking.is_paid ? "Paid" : "Unpaid",
+      ];
+      tableRows.push(rowData);
+    });
+
+    // Panggil plugin langsung ke doc
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+      styles: { fontSize: 8 },
+    });
+
+    doc.save("bookings-report.pdf");
+  };
+
   const filteredBookings = bookings.filter((booking) => {
     const matchesSearch =
       booking.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -323,7 +351,10 @@ export default function AdminDashboard() {
               <RefreshCw className="w-4 h-4" />
               Refresh
             </button>
-            <button className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+            <button
+              onClick={exportToPDF}
+              className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+            >
               <Download className="w-4 h-4" />
               Export
             </button>
@@ -464,7 +495,6 @@ export default function AdminDashboard() {
                         {booking.id}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {/* Tambahkan created_at */}
                         {formatDate(booking.created_at)}
                       </div>
                     </td>

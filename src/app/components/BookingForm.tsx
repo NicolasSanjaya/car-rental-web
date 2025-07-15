@@ -143,7 +143,12 @@ export default function BookingForm({
                   onChange={(e) =>
                     setFormData({ ...formData, endDate: e.target.value })
                   }
-                  min={formData.startDate}
+                  min={(() => {
+                    if (!formData.startDate) return "";
+                    const date = new Date(formData.startDate);
+                    date.setDate(date.getDate() + 1); // tambah 1 hari
+                    return date.toISOString().split("T")[0]; // format ke yyyy-mm-dd
+                  })()}
                   className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-red-500"
                   required
                 />
@@ -269,7 +274,7 @@ export default function BookingForm({
               <MidtransPayment
                 bookingData={bookingData}
                 onSuccess={() => {
-                  alert("Payment successful!");
+                  toast.success("Payment successful!");
                   onClose();
                 }}
                 onError={(error) => {

@@ -1,19 +1,18 @@
-export interface BookingData {
-  car_id: number;
+export interface Booking {
+  id: string;
+  car_id: string;
   start_date: string;
   end_date: string;
-  total_days: number;
-  totalAmount: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  payment_method: "midtrans" | "metamask";
-  user_id: number;
-  carName: string;
-}
-
-export interface MidtransConfig {
-  serverKey: string;
-  clientKey: string;
-  isProduction: boolean;
+  full_name: string;
+  email: string;
+  phone_number: string;
+  payment_method: "metamask" | "midtrans";
+  is_paid: boolean;
+  tx_hash: string | null;
+  amount: number;
+  created_at: string;
+  updated_at: string;
+  car_name?: string;
+  car_brand?: string;
+  car_image?: string;
 }

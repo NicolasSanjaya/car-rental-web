@@ -1,13 +1,12 @@
 export interface Car {
   id: number;
+  car_id: string;
+  name: string;
   brand: string;
-  model: string;
-  year: number;
-  is_available: boolean;
-  created_at: string; // karena dari API berupa ISO date string
-  image: string;
-  price: number;
-  features: string[]; // dari API: array of string (tapi tanpa escape quote)
+  price_per_day: number;
+  image_url: string;
+  available: boolean;
+  created_at: string;
 }
 
 export interface CarListApiResponse {

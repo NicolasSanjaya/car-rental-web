@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { BookingData } from "@/app/types/booking";
 import { Car } from "../types/car";
+import { useRouter } from "next/navigation";
 
 interface MetaMaskPaymentProps {
   bookingData: BookingData;
@@ -26,6 +27,7 @@ export default function MetaMaskPayment({
   const [loading, setLoading] = useState<boolean>(false);
   const [account, setAccount] = useState<string>("");
   const [connected, setConnected] = useState<boolean>(false);
+  const router = useRouter();
 
   // Sepolia testnet configuration
   const SEPOLIA_CHAIN_ID = "0xaa36a7";
@@ -165,6 +167,7 @@ export default function MetaMaskPayment({
       const data = await response.json();
       console.log("data", data);
       onSuccess();
+      router.push("/bookings");
     } catch (error: any) {
       console.error("Payment error:", error);
       onError(error.message || "Payment failed");

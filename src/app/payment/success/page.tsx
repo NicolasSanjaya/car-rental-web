@@ -103,7 +103,7 @@ export default function PaymentSuccess() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900">
         <div className="text-center bg-white p-8 rounded-lg shadow-md max-w-md mx-auto">
           <div className="text-red-600 mb-4">
             <svg
@@ -137,7 +137,7 @@ export default function PaymentSuccess() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900">
         <div className="text-center bg-white p-8 rounded-lg shadow-md max-w-md mx-auto">
           <div className="text-green-600 mb-4">
             <svg

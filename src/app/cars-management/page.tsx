@@ -11,6 +11,7 @@ import {
   X,
   Check,
   AlertCircle,
+  AlertTriangle,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import Image from "next/image";
@@ -53,6 +54,8 @@ export default function CarManagement() {
   const [uploading, setUploading] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [carToDelete, setCarToDelete] = useState<Car | null>(null);
 
   const [formData, setFormData] = useState<CarFormData>({
     brand: "",
@@ -91,7 +94,7 @@ export default function CarManagement() {
   }, [showModal]);
 
   useEffect(() => {
-    if (showModal) {
+    if (showModal || showDeleteModal) {
       document.body.classList.add("overflow-hidden");
     } else {
       document.body.classList.remove("overflow-hidden");
@@ -101,7 +104,7 @@ export default function CarManagement() {
     return () => {
       document.body.classList.remove("overflow-hidden");
     };
-  }, [showModal]);
+  }, [showModal, showDeleteModal]);
 
   const fetchCars = async () => {
     setLoading(true);
@@ -248,11 +251,20 @@ export default function CarManagement() {
     }
   };
 
-  const deleteCar = async (carId: string) => {
-    if (!confirm("Are you sure you want to delete this car?")) {
-      return;
-    }
+  // Fungsi untuk membuka modal delete
+  const openDeleteModal = (car: Car) => {
+    setCarToDelete(car);
+    setShowDeleteModal(true);
+  };
 
+  // Fungsi untuk menutup modal delete
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setCarToDelete(null);
+  };
+
+  const deleteCar = async (carId: string) => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -274,6 +286,9 @@ export default function CarManagement() {
     } catch (error) {
       console.error("Error deleting car:", error);
       toast.error("Error deleting car");
+    } finally {
+      setLoading(false);
+      closeDeleteModal();
     }
   };
 
@@ -349,7 +364,7 @@ export default function CarManagement() {
           <h1 className="text-3xl font-bold text-white">Car Management</h1>
           <button
             onClick={() => openModal()}
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Add New Car
@@ -496,7 +511,7 @@ export default function CarManagement() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => openModal(car)}
-                      className="text-blue-600 hover:text-blue-800"
+                      className="text-blue-600 hover:text-blue-800 cursor-pointer"
                     >
                       <Edit className="w-4 h-4" />
                     </button>
@@ -517,8 +532,8 @@ export default function CarManagement() {
                       )}
                     </button>
                     <button
-                      onClick={() => deleteCar(car.id)}
-                      className="text-red-600 hover:text-red-800"
+                      onClick={() => openDeleteModal(car)}
+                      className="text-red-600 hover:text-red-800 cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -541,7 +556,7 @@ export default function CarManagement() {
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded disabled:opacity-50"
+                className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded disabled:opacity-50 cursor-pointer"
               >
                 Previous
               </button>
@@ -553,7 +568,7 @@ export default function CarManagement() {
                   setCurrentPage(Math.min(totalPages, currentPage + 1))
                 }
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded disabled:opacity-50"
+                className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded disabled:opacity-50 cursor-pointer"
               >
                 Next
               </button>
@@ -574,7 +589,7 @@ export default function CarManagement() {
                 </h3>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-gray-600 cursor-pointer"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -668,7 +683,7 @@ export default function CarManagement() {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
                     >
                       <Upload className="w-4 h-4" />
                       Choose Image
@@ -703,7 +718,7 @@ export default function CarManagement() {
                     <button
                       type="button"
                       onClick={addFeature}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
                     >
                       Add
                     </button>
@@ -718,7 +733,7 @@ export default function CarManagement() {
                         <button
                           type="button"
                           onClick={() => removeFeature(index)}
-                          className="text-blue-600 hover:text-blue-800"
+                          className="text-blue-600 hover:text-blue-800 cursor-pointer"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -752,14 +767,14 @@ export default function CarManagement() {
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={uploading}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 cursor-pointer"
                   >
                     {uploading && (
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -768,6 +783,87 @@ export default function CarManagement() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && carToDelete && (
+          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+            <div
+              className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl transform transition-all"
+              ref={modalRef}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-red-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Delete Car
+                  </h3>
+                </div>
+                <button
+                  onClick={closeDeleteModal}
+                  className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="mb-6">
+                <p className="text-gray-600 mb-4">
+                  Are you sure you want to delete this car? This action cannot
+                  be undone.
+                </p>
+
+                {/* Car Info */}
+                <div className="bg-gray-50 rounded-lg p-4 border-l-4 border-red-500">
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src={carToDelete.image}
+                      alt={`${carToDelete.brand} ${carToDelete.model}`}
+                      className="w-12 h-12 object-cover rounded-lg"
+                      width={48}
+                      height={48}
+                    />
+                    <div>
+                      <h4 className="font-medium text-gray-900">
+                        {carToDelete.brand} {carToDelete.model}
+                      </h4>
+                      <p className="text-sm text-gray-500">
+                        {carToDelete.year} • ${carToDelete.price}/day
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={closeDeleteModal}
+                  className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    if (carToDelete) {
+                      await deleteCar(carToDelete.id);
+                    }
+                  }}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center gap-2 cursor-pointer"
+                >
+                  {loading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  ) : (
+                    <Trash2 className="w-4 h-4" />
+                  )}
+                  Delete Car
+                </button>
+              </div>
             </div>
           </div>
         )}
