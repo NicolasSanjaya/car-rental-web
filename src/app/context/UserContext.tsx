@@ -14,7 +14,7 @@ type User = {
   email: string;
   full_name: string;
   id: number; // Assuming id is a unique identifier for the user
-  role: "admin" | "user"; // Assuming roles are either 'admin' or 'user'
+  role?: "admin" | "user"; // Assuming roles are either 'admin' or 'user'
 };
 
 type UserContextType = {
@@ -55,8 +55,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           },
         }
       );
-
-      console.log("Response status:", response);
 
       if (response.ok) {
         const userData = await response.json();

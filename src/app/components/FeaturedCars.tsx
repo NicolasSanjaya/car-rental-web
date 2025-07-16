@@ -2,9 +2,10 @@
 import { useState, useEffect } from "react";
 import { CarListApiResponse } from "@/app/types/car";
 import CarCard from "@/app/components/CarCard";
+import Link from "next/link";
 
 export default function FeaturedCars() {
-  const [cars, setCars] = useState<CarListApiResponse["cars"]>();
+  const [cars, setCars] = useState<CarListApiResponse["data"]>();
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -14,10 +15,11 @@ export default function FeaturedCars() {
   const fetchFeaturedCars = async (): Promise<void> => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/cars?available=true`
+        `${process.env.NEXT_PUBLIC_API_URL}/cars/available`
       );
       const data: CarListApiResponse = await response.json();
-      setCars(data?.cars?.slice(0, 3)); // Show only first 3 cars as featured
+      // console.log("Featured cars data:", data.data);
+      setCars(data?.data?.slice(0, 3)); // Show only first 3 cars as featured
       setLoading(false);
     } catch (error) {
       console.error("Error fetching cars:", error);
@@ -57,12 +59,12 @@ export default function FeaturedCars() {
           ))}
         </div>
         <div className="text-center mt-12">
-          <a
+          <Link
             href="/cars"
             className="bg-black text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition"
           >
             View All Cars
-          </a>
+          </Link>
         </div>
       </div>
     </section>

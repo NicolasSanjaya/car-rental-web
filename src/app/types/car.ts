@@ -1,26 +1,29 @@
 export interface Car {
   id: number;
-  car_id: string;
-  name: string;
+  model: string;
   brand: string;
-  price_per_day: number;
-  image_url: string;
+  price: number;
+  image: string;
+  is_available: boolean;
   available: boolean;
   created_at: string;
+  features: [];
+  updated_at: string;
+  year: number;
 }
 
 export interface CarListApiResponse {
-  status: boolean;
+  success: boolean;
   message: string;
-  cars: Car[];
-  count: number;
+  data: Car[];
+  count?: number;
 }
 
 export interface CarApiResponse {
-  status: boolean;
+  success: boolean;
   message: string;
   car: Car;
-  count: number;
+  count?: number;
 }
 
 export interface CarFilters {

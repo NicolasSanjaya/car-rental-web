@@ -13,6 +13,8 @@ import {
   Filter,
   Download,
   RefreshCw,
+  AlertTriangle,
+  X,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import jsPDF from "jspdf";
@@ -50,8 +52,8 @@ export default function AdminDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const modalRef = useRef<HTMLDivElement>(null);
-
-  console.log(bookings);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -114,7 +116,7 @@ export default function AdminDashboard() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Fetched bookings:", data.bookings);
+        console.log("Fetched bookings:", data);
         setBookings(data.bookings);
         calculateStats(data.bookings);
       } else {
@@ -132,6 +134,7 @@ export default function AdminDashboard() {
       );
       if (response.ok) {
         const data = await response.json();
+        console.log(data);
         setCars(data.cars);
       }
     } catch (error) {
@@ -217,44 +220,46 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error("Error updating booking status:", error);
       toast.error("Error updating booking status");
+    } finally {
+      setShowBookingModal(false);
     }
   };
 
-  const deleteBooking = async (bookingId: string) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus booking ini?")) {
-      return;
-    }
+  // const deleteBooking = async (bookingId: string) => {
+  //   if (!confirm("Apakah Anda yakin ingin menghapus booking ini?")) {
+  //     return;
+  //   }
 
-    console.log("Deleting booking with ID:", bookingId);
+  //   console.log("Deleting booking with ID:", bookingId);
 
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/bookings/${bookingId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_URL}/api/admin/bookings/${bookingId}`,
+  //       {
+  //         method: "DELETE",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
 
-      console.log("Delete response:", response);
-      const data = await response.json();
-      console.log("Delete response data:", data);
+  //     console.log("Delete response:", response);
+  //     const data = await response.json();
+  //     console.log("Delete response data:", data);
 
-      if (response.ok) {
-        await fetchBookings();
-        toast.success("Booking berhasil dihapus");
-      } else {
-        toast.error("Gagal menghapus booking");
-      }
-    } catch (error) {
-      console.error("Error deleting booking:", error);
-      toast.error("Error deleting booking");
-    }
-  };
+  //     if (response.ok) {
+  //       await fetchBookings();
+  //       toast.success("Booking berhasil dihapus");
+  //     } else {
+  //       toast.error("Gagal menghapus booking");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting booking:", error);
+  //     toast.error("Error deleting booking");
+  //   }
+  // };
 
   const exportToPDF = () => {
     const doc = new jsPDF();
@@ -301,6 +306,52 @@ export default function AdminDashboard() {
     });
 
     doc.save("bookings-report.pdf");
+  };
+
+  // Fungsi untuk membuka modal delete
+  const openDeleteModal = (car: Booking) => {
+    setBookingToDelete(car);
+    setShowDeleteModal(true);
+  };
+
+  // Fungsi untuk menutup modal delete
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setBookingToDelete(null);
+  };
+
+  const deleteCar = async () => {
+    if (!bookingToDelete) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/bookings/${bookingToDelete.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Delete response:", response);
+      const data = await response.json();
+      console.log("Delete response data:", data);
+
+      if (response.ok) {
+        await fetchBookings();
+        toast.success("Booking berhasil dihapus");
+      } else {
+        toast.error("Gagal menghapus booking");
+      }
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+      toast.error("Error deleting booking");
+    } finally {
+      setShowDeleteModal(false);
+    }
   };
 
   const filteredBookings = bookings.filter((booking) => {
@@ -583,7 +634,7 @@ export default function AdminDashboard() {
                           )}
                         </button>
                         <button
-                          onClick={() => deleteBooking(booking.id)}
+                          onClick={() => openDeleteModal(booking)}
                           className="text-red-600 hover:text-red-900"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -780,7 +831,8 @@ export default function AdminDashboard() {
                   </button>
                   <button
                     onClick={() => {
-                      deleteBooking(selectedBooking.id);
+                      openDeleteModal(selectedBooking);
+
                       setShowBookingModal(false);
                     }}
                     className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
@@ -789,6 +841,69 @@ export default function AdminDashboard() {
                     Delete Booking
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && bookingToDelete && (
+          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl transform transition-all">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-red-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Delete Booking
+                  </h3>
+                </div>
+                <button
+                  onClick={closeDeleteModal}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="mb-6">
+                <p className="text-gray-600 mb-4">
+                  Are you sure you want to delete this booking? This action
+                  cannot be undone.
+                </p>
+
+                {/* Car Info */}
+                <div className="bg-gray-50 rounded-lg p-4 border-l-4 border-red-500">
+                  <div className="flex items-center gap-3">
+                    <div>
+                      <h4 className="font-medium text-gray-900">
+                        {bookingToDelete.id}
+                      </h4>
+                      <p className="text-sm text-gray-500">
+                        {bookingToDelete.email} • {bookingToDelete.full_name}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={closeDeleteModal}
+                  className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={deleteCar}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete Booking
+                </button>
               </div>
             </div>
           </div>
