@@ -4,7 +4,7 @@ import { CarListApiResponse, CarFilters } from "@/app/types/car";
 import CarCard from "./CarCard";
 
 export default function CarListing() {
-  const [cars, setCars] = useState<CarListApiResponse["cars"]>();
+  const [cars, setCars] = useState<CarListApiResponse["data"]>();
   const [loading, setLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState<CarFilters>({
     brand: "",
@@ -28,7 +28,7 @@ export default function CarListing() {
         `${process.env.NEXT_PUBLIC_API_URL}/cars?${params}`
       );
       const data: CarListApiResponse = await response.json();
-      setCars(data?.cars);
+      setCars(data?.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching cars:", error);

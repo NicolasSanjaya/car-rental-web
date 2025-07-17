@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState, useEffect } from "react";
-import { BookingData } from "@/app/types/booking";
 import { Car } from "../types/car";
 import { useRouter } from "next/navigation";
 
 interface MetaMaskPaymentProps {
-  bookingData: BookingData;
+  bookingData: any;
   onSuccess: () => void;
   onError: (error: string) => void;
   car: Car;
@@ -150,6 +149,7 @@ export default function MetaMaskPayment({
         {
           method: "POST",
           headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -166,8 +166,12 @@ export default function MetaMaskPayment({
       );
       const data = await response.json();
       console.log("data", data);
-      onSuccess();
-      router.push("/bookings");
+      if (data.success) {
+        onSuccess();
+        router.push("/bookings");
+      } else {
+        onError(data.message);
+      }
     } catch (error: any) {
       console.error("Payment error:", error);
       onError(error.message || "Payment failed");

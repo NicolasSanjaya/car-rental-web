@@ -22,9 +22,9 @@ interface Car {
   model: string;
   year: number;
   is_available: boolean;
-  image: string;
+  image?: string;
   price: number;
-  features: string[];
+  features?: string[];
   created_at: string;
   updated_at: string;
 }
@@ -122,7 +122,8 @@ export default function CarManagement() {
 
       if (response.ok) {
         const data = await response.json();
-        setCars(data.cars);
+        console.log({ data });
+        setCars(data.data);
       } else {
         toast.error("Failed to fetch cars");
       }
@@ -189,9 +190,9 @@ export default function CarManagement() {
         is_available: car.is_available,
         image: null,
         price: car.price,
-        features: car.features,
+        features: car.features || [],
       });
-      setImagePreview(car.image);
+      setImagePreview(car.image || null);
       setIsEditing(true);
     } else {
       resetForm();
@@ -223,6 +224,8 @@ export default function CarManagement() {
         : `${process.env.NEXT_PUBLIC_API_URL}/api/admin/cars`;
 
       const method = isEditing ? "PUT" : "POST";
+
+      console.log({ formDataToSend });
 
       const response = await fetch(url, {
         method,
@@ -277,7 +280,11 @@ export default function CarManagement() {
         }
       );
 
-      if (response.ok) {
+      const data = await response.json();
+
+      console.log("delete", data);
+
+      if (data.success) {
         toast.success("Car deleted successfully");
         await fetchCars();
       } else {
@@ -380,7 +387,7 @@ export default function CarManagement() {
                   Total Cars
                 </h3>
                 <p className="text-2xl font-bold text-blue-600">
-                  {cars.length}
+                  {cars?.length}
                 </p>
               </div>
               <Car className="w-10 h-10 text-blue-600" />
@@ -459,8 +466,8 @@ export default function CarManagement() {
             >
               <div className="relative">
                 <Image
-                  src={car?.image}
-                  alt={`${car.brand} ${car.model}`}
+                  src={car?.image || "/images/no-image.png"}
+                  alt={"/images/no-image.png"}
                   className="w-full h-48 object-cover"
                   width={640}
                   height={384}
@@ -500,7 +507,7 @@ export default function CarManagement() {
                     </span>
                   ))}
 
-                  {car.features.length > 3 && (
+                  {car.features?.length && car.features.length > 3 && (
                     <span className="inline-flex px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded">
                       +{car.features.length - 3} more
                     </span>
@@ -822,8 +829,8 @@ export default function CarManagement() {
                 <div className="bg-gray-50 rounded-lg p-4 border-l-4 border-red-500">
                   <div className="flex items-center gap-3">
                     <Image
-                      src={carToDelete.image}
-                      alt={`${carToDelete.brand} ${carToDelete.model}`}
+                      src={carToDelete.image || "/images/no-image.png"}
+                      alt={"/images/no-image.png"}
                       className="w-12 h-12 object-cover rounded-lg"
                       width={48}
                       height={48}

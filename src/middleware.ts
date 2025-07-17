@@ -1,38 +1,55 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Middleware akan dijalankan di setiap permintaan
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
   const token = request.cookies.get("token")?.value;
   const role = request.cookies.get("role")?.value;
 
-  if (token && pathname === "/login")
-    return NextResponse.redirect(new URL("/", request.url));
-  if (token && pathname === "/register")
-    return NextResponse.redirect(new URL("/", request.url));
-
+  // 🔒 Redirect user yang sudah login ke home jika akses /login
   if (
-    role === "admin" &&
-    pathname !== "/dashboard" &&
-    pathname !== "/profile" &&
-    pathname !== "/cars-management"
+    token &&
+    [
+      "/login",
+      "/register",
+      "/otp",
+      "/reset-password",
+      "/verify-email",
+    ].includes(pathname)
   ) {
-    console.log("⛔ Admin tidak boleh akses route ini, redirect ke /dashboard");
-    return NextResponse.redirect(new URL("/dashboard", request.url));
-  } else if (
-    (role !== "admin" && pathname === "/dashboard") ||
-    pathname === "/cars-management"
-  ) {
-    console.log("⛔ User tidak boleh akses route ini, redirect ke /");
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // Jika bukan admin atau bukan route '/', lanjutkan
+  // 🔒 Redirect ke home jika belum login dan akses halaman terbatas
+  if (
+    !token &&
+    ["/dashboard", "/cars-management", "/profile"].includes(pathname)
+  ) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  // ✅ Akses Role Admin
+  if (role === "admin") {
+    const allowedAdminPaths = ["/dashboard", "/profile", "/cars-management"];
+    if (!allowedAdminPaths.includes(pathname)) {
+      console.log(
+        "⛔ Admin tidak boleh akses route ini, redirect ke /dashboard"
+      );
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+  }
+
+  // ✅ Akses Role User
+  if (role === "user") {
+    const blockedUserPaths = ["/dashboard", "/cars-management"];
+    if (blockedUserPaths.includes(pathname)) {
+      console.log("⛔ User tidak boleh akses route ini, redirect ke /");
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  // matcher: ["/", "/dashboard"], // Tentukan route yang ingin diterapkan middleware
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

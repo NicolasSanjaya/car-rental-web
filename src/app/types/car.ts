@@ -22,7 +22,7 @@ export interface CarListApiResponse {
 export interface CarApiResponse {
   success: boolean;
   message: string;
-  car: Car;
+  data: Car;
   count?: number;
 }
 

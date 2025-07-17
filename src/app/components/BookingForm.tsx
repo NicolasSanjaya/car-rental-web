@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { Car } from "@/app/types/car";
-import { BookingData } from "@/app/types/booking";
 import MidtransPayment from "@/app/components/MidtransPayment";
 import MetaMaskPayment from "@/app/components/MetaMaskPayment";
 import { toast } from "react-toastify";
@@ -83,12 +82,12 @@ export default function BookingForm({
     }
   };
 
-  const bookingData: BookingData = {
+  const bookingData = {
     car_id: car.id,
     start_date: formData.startDate,
     end_date: formData.endDate,
     total_days: totalDays,
-    totalAmount: totalAmount.toString(),
+    totalAmount: totalAmount,
     customerName: formData.customerName,
     customerEmail: formData.customerEmail,
     customerPhone: formData.customerPhone,

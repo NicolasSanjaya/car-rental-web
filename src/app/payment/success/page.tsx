@@ -49,6 +49,7 @@ export default function PaymentSuccess() {
           {
             method: "POST",
             headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify(paymentParams),

@@ -2,10 +2,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState, useEffect } from "react";
-import { BookingData } from "@/app/types/booking";
 
 interface MidtransPaymentProps {
-  bookingData: BookingData;
+  bookingData: any;
   onSuccess: () => void;
   onError: (error: string) => void;
 }
@@ -50,6 +49,7 @@ export default function MidtransPayment({
         {
           method: "POST",
           headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ bookingData }),

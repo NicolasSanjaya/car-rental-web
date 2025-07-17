@@ -41,7 +41,7 @@ export default function CarDetail({ carId }: CarDetailProps) {
         `${process.env.NEXT_PUBLIC_API_URL}/cars/${carId}`
       );
       const data: CarApiResponse = await response.json();
-      setCar(data?.car);
+      setCar(data?.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching car detail:", error);

@@ -67,14 +67,6 @@ export default function ContactPage() {
         }
       );
 
-      // Check if response is ok
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.message || `HTTP error! status: ${response.status}`
-        );
-      }
-
       const result = await response.json();
 
       if (result.success) {
@@ -307,9 +299,9 @@ export default function ContactPage() {
                       className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                       placeholder="Enter your email"
                     />
-                    {errors.email && (
+                    {errors?.email?.message && (
                       <p className="mt-1 text-sm text-red-500">
-                        {errors.email.message}
+                        {errors?.email?.message}
                       </p>
                     )}
                   </div>
@@ -326,9 +318,9 @@ export default function ContactPage() {
                       className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                       placeholder="Enter your phone number"
                     />
-                    {errors.phone && (
+                    {errors?.phone?.message && (
                       <p className="mt-1 text-sm text-red-500">
-                        {errors.phone.message}
+                        {errors?.phone?.message}
                       </p>
                     )}
                   </div>

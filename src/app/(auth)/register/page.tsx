@@ -52,6 +52,27 @@ export default function RegisterPage() {
     });
 
     try {
+      const existinguser = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/check-existing-user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+          }),
+        }
+      );
+      const existingUserData = await existinguser.json();
+      if (!existingUserData?.success) {
+        toast.error("User already exists");
+        setIsLoading(false);
+        return;
+      }
+
       const otpResponse = await fetch(
         `${process.env.NEXT_PUBLIC_API_OTP_AUTH_URL}/request-otp`,
         {
