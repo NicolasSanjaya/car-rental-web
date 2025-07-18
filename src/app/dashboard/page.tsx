@@ -56,8 +56,6 @@ export default function AdminDashboard() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null);
 
-  console.log("loading", loading);
-
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (

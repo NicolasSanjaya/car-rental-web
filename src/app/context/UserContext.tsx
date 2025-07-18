@@ -42,6 +42,21 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading(false);
         return;
       }
+
+      // 1. Ambil payload dari token JWT
+      const payloadBase64 = token.split(".")[1];
+      const decodedPayload = JSON.parse(atob(payloadBase64));
+
+      // 2. Cek waktu kedaluwarsa (exp)
+      // `exp` adalah Unix timestamp dalam detik, `Date.now()` dalam milidetik
+      const expirationTime = decodedPayload.exp * 1000;
+
+      if (Date.now() > expirationTime) {
+        localStorage.removeItem("token");
+        logout(); // Panggil fungsi logout jika token sudah kedaluwarsa
+        setIsLoading(false);
+        return;
+      }
       // Verify token with your backend
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/profile`,

@@ -89,7 +89,6 @@ export default function CarListing() {
     return uniqueBrands;
   }, [allCars]); // <-- Hanya dihitung ulang jika `allCars` berubah
 
-  console.log({ filters });
 
   return (
     <div>

@@ -21,7 +21,6 @@ export default function OTPPage() {
   useEffect(() => {
     const data = localStorage.getItem("form-data");
     const email = data ? JSON.parse(data).email : null;
-    console.log("email", email);
     if (!email) {
       router.push("/register");
       return;
