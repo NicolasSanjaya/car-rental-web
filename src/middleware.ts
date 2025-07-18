@@ -19,14 +19,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // 🔒 Redirect ke home jika belum login dan akses halaman terbatas
-  if (
-    !token &&
-    ["/dashboard", "/cars-management", "/profile"].includes(pathname)
-  ) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
   // ✅ Akses Role Admin
   if (role === "admin") {
     const allowedAdminPaths = ["/dashboard", "/profile", "/cars-management"];
