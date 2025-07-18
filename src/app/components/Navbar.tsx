@@ -7,11 +7,15 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "../context/UserContext";
+import { useForm } from "../context/RegisterContext";
 
 export default function Navbar() {
   const { user, logout, loading, checkAuthStatus } = useUser();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const router = useRouter();
+  const { formData } = useForm();
+
+  console.log({ formData });
 
   useEffect(() => {
     checkAuthStatus();

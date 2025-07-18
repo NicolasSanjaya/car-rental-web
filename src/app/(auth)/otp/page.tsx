@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -18,7 +19,10 @@ export default function OTPPage() {
   const { setUser } = useUser();
 
   useEffect(() => {
-    if (!formData?.email) {
+    const data = localStorage.getItem("form-data");
+    const email = data ? JSON.parse(data).email : null;
+    console.log("email", email);
+    if (!email) {
       router.push("/register");
       return;
     }
@@ -34,7 +38,7 @@ export default function OTPPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [formData?.email, router]);
+  }, [formData?.email]);
 
   useEffect(() => {
     // Fokus input pertama setelah render

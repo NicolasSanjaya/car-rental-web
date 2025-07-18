@@ -1,7 +1,13 @@
 // app/context/FormContext.tsx
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 
 type FormData = {
   name: string;
@@ -19,6 +25,36 @@ const FormContext = createContext<FormContextType | undefined>(undefined);
 
 export const FormProvider = ({ children }: { children: ReactNode }) => {
   const [formData, setFormDataContext] = useState<FormData | null>(null);
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
+
+  useEffect(() => {
+    const storedFormData = localStorage.getItem("form-data");
+    if (storedFormData) {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [timeLeft]);
+
+  useEffect(() => {
+    if (timeLeft === 0) {
+      localStorage.removeItem("form-data");
+    }
+  }, [timeLeft]);
+
+  useEffect(() => {
+    const storedFormData = localStorage.getItem("form-data");
+    if (storedFormData) {
+      setFormDataContext(JSON.parse(storedFormData));
+    }
+  }, []);
 
   return (
     <FormContext.Provider

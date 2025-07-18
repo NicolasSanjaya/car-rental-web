@@ -51,6 +51,8 @@ export default function RegisterPage() {
       password: formData.password,
     });
 
+    localStorage.setItem("form-data", JSON.stringify(formData));
+
     try {
       const existinguser = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/check-existing-user`,
