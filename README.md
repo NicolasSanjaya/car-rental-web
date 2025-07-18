@@ -5,6 +5,8 @@ A modern, responsive car rental website built with Next.js, featuring premium sp
 ## 🌟 Live Demo
 
 **Website**: [https://car-rental-web-weld.vercel.app/](https://car-rental-web-weld.vercel.app/)
+**Midtrans Payment**: [https://simulator.sandbox.midtrans.com/bca/va/index](https://simulator.sandbox.midtrans.com/bca/va/index)
+**Blockchain Payment**: [https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en](https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en)
 
 ## ✨ Features
 
