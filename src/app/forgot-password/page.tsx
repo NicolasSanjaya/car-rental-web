@@ -27,9 +27,6 @@ export default function ForgotPasswordPage() {
 
       const data = await response.json();
 
-      console.log("Forgot password response:", response);
-      console.log("Forgot password data:", data);
-
       if (response.ok) {
         setIsEmailSent(true);
         toast.success("Reset password email sent successfully!");

@@ -18,7 +18,6 @@ export default function FeaturedCars() {
         `${process.env.NEXT_PUBLIC_API_URL}/cars/available`
       );
       const data: CarListApiResponse = await response.json();
-      // console.log("Featured cars data:", data.data);
       setCars(data?.data?.slice(0, 3)); // Show only first 3 cars as featured
       setLoading(false);
     } catch (error) {

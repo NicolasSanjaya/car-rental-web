@@ -12,11 +12,9 @@ export default function Navbar() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const router = useRouter();
 
-  console.log("User in Navbar:", user);
-
   useEffect(() => {
     checkAuthStatus();
-  }, []);
+  }, [checkAuthStatus]);
 
   const handleLogout = () => {
     logout();

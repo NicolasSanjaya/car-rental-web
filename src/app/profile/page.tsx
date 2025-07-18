@@ -161,7 +161,7 @@ export default function ProfilePage() {
     }
   };
 
-  const handleCancel = (field: string) => {
+  const handleCancel = () => {
     setEditing(null);
     setErrors({});
     if (user) {
@@ -256,7 +256,7 @@ export default function ProfilePage() {
                     )}
                   </button>
                   <button
-                    onClick={() => handleCancel("full_name")}
+                    onClick={() => handleCancel()}
                     className="flex items-center bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
                   >
                     <X className="w-4 h-4 mr-2" />
@@ -313,7 +313,7 @@ export default function ProfilePage() {
                     )}
                   </button>
                   <button
-                    onClick={() => handleCancel("email")}
+                    onClick={() => handleCancel()}
                     className="flex items-center bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
                   >
                     <X className="w-4 h-4 mr-2" />
@@ -425,7 +425,7 @@ export default function ProfilePage() {
                     )}
                   </button>
                   <button
-                    onClick={() => handleCancel("password")}
+                    onClick={() => handleCancel()}
                     className="flex items-center bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
                   >
                     <X className="w-4 h-4 mr-2" />

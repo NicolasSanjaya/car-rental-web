@@ -1,16 +1,15 @@
 import CarDetail from "@/app/components/CarDetail";
 import Footer from "@/app/components/Footer";
 
-interface CarDetailPageProps {
-  params: {
-    id: string;
-  };
-}
+type CarDetailPageProps = {
+  params: Promise<{ id: string }>;
+};
 
-export default function CarDetailPage({ params }: CarDetailPageProps) {
+export default async function CarDetailPage({ params }: CarDetailPageProps) {
+  const { id } = await params;
   return (
     <div className="min-h-screen">
-      <CarDetail carId={params.id} />
+      <CarDetail carId={id} />
       <Footer />
     </div>
   );

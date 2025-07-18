@@ -9,12 +9,6 @@ interface PaymentParams {
   transaction_status: string;
 }
 
-interface NotificationResponse {
-  success: boolean;
-  message?: string;
-  data?: unknown;
-}
-
 export default function PaymentSuccess() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -59,9 +53,6 @@ export default function PaymentSuccess() {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        const result: NotificationResponse = await response.json();
-        console.log("Notification sent successfully:", result);
 
         setSuccess(true);
         setLoading(false);

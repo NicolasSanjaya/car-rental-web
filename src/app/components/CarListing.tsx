@@ -13,31 +13,29 @@ export default function CarListing() {
   });
 
   useEffect(() => {
+    const fetchCars = async (): Promise<void> => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+        if (filters.brand) params.append("brand", filters.brand);
+        if (filters.year) params.append("year", filters.year);
+        if (filters.available) params.append("available", filters.available);
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/cars?${params}`
+        );
+        const data: CarListApiResponse = await response.json();
+        setCars(data?.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching cars:", error);
+        setLoading(false);
+      }
+    };
     fetchCars();
   }, [filters]);
 
-  const fetchCars = async (): Promise<void> => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (filters.brand) params.append("brand", filters.brand);
-      if (filters.year) params.append("year", filters.year);
-      if (filters.available) params.append("available", filters.available);
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/cars?${params}`
-      );
-      const data: CarListApiResponse = await response.json();
-      setCars(data?.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching cars:", error);
-      setLoading(false);
-    }
-  };
-
   const handleFilterChange = (key: keyof CarFilters, value: string): void => {
-    console.log(key, value);
     setFilters((prev) => ({
       ...prev,
       [key]: value,

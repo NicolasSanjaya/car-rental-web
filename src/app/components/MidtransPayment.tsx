@@ -42,7 +42,6 @@ export default function MidtransPayment({
   const createPayment = async () => {
     setLoading(true);
 
-    console.log("Creating payment with booking data:", bookingData);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/payment/midtrans`,

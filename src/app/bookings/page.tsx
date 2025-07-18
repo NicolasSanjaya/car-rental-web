@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
   Calendar,
@@ -47,15 +47,68 @@ export default function BookingPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (user) {
-      fetchBookings();
+  const fetchBookings = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/user/${user?.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setBookings(data.data);
+      } else {
+        toast.error("Failed to fetch bookings");
+      }
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      toast.error("Error fetching bookings");
+    } finally {
+      setIsLoading(false);
     }
   }, [user]);
 
   useEffect(() => {
+    if (user) {
+      fetchBookings();
+    }
+  }, [user, fetchBookings]);
+
+  useEffect(() => {
+    const filterBookings = () => {
+      let filtered = bookings;
+
+      // Filter by payment status
+      if (filter === "paid") {
+        filtered = filtered.filter((booking) => booking.is_paid);
+      } else if (filter === "unpaid") {
+        filtered = filtered.filter((booking) => !booking.is_paid);
+      }
+
+      // Filter by search term
+      if (searchTerm) {
+        filtered = filtered.filter(
+          (booking) =>
+            booking.car_name
+              ?.toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
+            booking.car_brand
+              ?.toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
+            booking.id.includes(searchTerm.toLowerCase())
+        );
+      }
+
+      setFilteredBookings(filtered);
+    };
+
     filterBookings();
-  }, [bookings, filter, searchTerm]);
+  }, [bookings, filter, searchTerm, setFilteredBookings]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -88,56 +141,6 @@ export default function BookingPage() {
       document.body.classList.remove("overflow-hidden");
     };
   }, [showModal]);
-
-  const fetchBookings = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/user/${user?.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("data", data);
-        setBookings(data.data);
-      } else {
-        toast.error("Failed to fetch bookings");
-      }
-    } catch (error) {
-      console.error("Error fetching bookings:", error);
-      toast.error("Error fetching bookings");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const filterBookings = () => {
-    let filtered = bookings;
-
-    // Filter by payment status
-    if (filter === "paid") {
-      filtered = filtered.filter((booking) => booking.is_paid);
-    } else if (filter === "unpaid") {
-      filtered = filtered.filter((booking) => !booking.is_paid);
-    }
-
-    // Filter by search term
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (booking) =>
-          booking.car_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          booking.car_brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          booking.id.includes(searchTerm.toLowerCase())
-      );
-    }
-
-    setFilteredBookings(filtered);
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("id-ID", {

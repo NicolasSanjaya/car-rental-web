@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { CarApiResponse, Car } from "@/app/types/car";
 import BookingForm from "@/app/components/BookingForm";
 import Image from "next/image";
@@ -19,10 +19,6 @@ export default function CarDetail({ carId }: CarDetailProps) {
   const router = useRouter();
 
   useEffect(() => {
-    fetchCarDetail();
-  }, [carId]);
-
-  useEffect(() => {
     if (showBooking) {
       document.body.classList.add("overflow-hidden");
     } else {
@@ -35,7 +31,7 @@ export default function CarDetail({ carId }: CarDetailProps) {
     };
   }, [showBooking]);
 
-  const fetchCarDetail = async (): Promise<void> => {
+  const fetchCarDetail = useCallback(async (): Promise<void> => {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/cars/${carId}`
@@ -47,7 +43,11 @@ export default function CarDetail({ carId }: CarDetailProps) {
       console.error("Error fetching car detail:", error);
       setLoading(false);
     }
-  };
+  }, [carId]);
+
+  useEffect(() => {
+    fetchCarDetail();
+  }, [carId, fetchCarDetail]);
 
   if (loading) {
     return (
@@ -86,6 +86,7 @@ export default function CarDetail({ carId }: CarDetailProps) {
           className="w-full h-96 object-cover rounded-lg shadow-lg"
           width={800}
           height={600}
+          priority
         />
         <div className="absolute top-4 right-4">
           <span

@@ -122,7 +122,6 @@ export default function CarManagement() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log({ data });
         setCars(data.data);
       } else {
         toast.error("Failed to fetch cars");
@@ -225,8 +224,6 @@ export default function CarManagement() {
 
       const method = isEditing ? "PUT" : "POST";
 
-      console.log({ formDataToSend });
-
       const response = await fetch(url, {
         method,
         headers: {
@@ -281,8 +278,6 @@ export default function CarManagement() {
       );
 
       const data = await response.json();
-
-      console.log("delete", data);
 
       if (data.success) {
         toast.success("Car deleted successfully");

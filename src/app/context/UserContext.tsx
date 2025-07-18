@@ -36,10 +36,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
-      console.log("Token from localStorage:", token);
 
       if (!token) {
-        console.log("No token found, user is not authenticated.");
         setUser(null);
         setIsLoading(false);
         return;
@@ -58,7 +56,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
       if (response.ok) {
         const userData = await response.json();
-        console.log("User data verify jwt:", userData);
         setUser(userData.data.user);
       } else {
         localStorage.removeItem("token");
@@ -90,8 +87,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         }
       );
       const data = await response.json();
-      console.log("Logout response:", response);
-      console.log("Logout data:", data);
       if (response.ok) {
         setUser(null);
         localStorage.removeItem("token");

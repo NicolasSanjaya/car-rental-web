@@ -84,7 +84,6 @@ export default function OTPPage() {
         }
       );
       const verifyOtpData = await verifyOtp.json();
-      console.log("OTP Verify:", verifyOtpData);
       if (verifyOtp.ok) {
         toast.success("OTP verified successfully!");
         // Register the user after OTP verification
@@ -104,12 +103,11 @@ export default function OTPPage() {
         );
 
         const registerData = await register.json();
-        console.log("Registration:", registerData);
         localStorage.setItem("token", registerData.data.token);
-        console.log("Token:", registerData.data.token);
         setUser({
           email: formData?.email || "",
           full_name: formData?.name || "",
+          id: registerData.data.user.id,
         });
         router.push("/dashboard");
       } else {
@@ -199,7 +197,9 @@ export default function OTPPage() {
                 {otp.map((digit, index) => (
                   <input
                     key={index}
-                    ref={(el) => (inputRefs.current[index] = el)}
+                    ref={(el) =>
+                      (inputRefs.current[el ? index : 0] ?? {}).focus()
+                    }
                     type="text"
                     maxLength={1}
                     value={digit}

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Calendar,
   DollarSign,
@@ -56,10 +56,6 @@ export default function AdminDashboard() {
   const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null);
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
         modalRef.current &&
@@ -90,18 +86,30 @@ export default function AdminDashboard() {
     };
   }, [showBookingModal]);
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      await Promise.all([fetchBookings(), fetchCars()]);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchBookings = useCallback(async () => {
+    const calculateStats = (bookingData: Booking[]) => {
+      const totalBookings = bookingData.length;
+      const totalRevenue = bookingData.reduce(
+        (sum, booking) => sum + (booking.amount || 0),
+        0
+      );
+      const paidBookings = bookingData.filter(
+        (booking) => booking.is_paid
+      ).length;
+      const pendingBookings = bookingData.filter(
+        (booking) => !booking.is_paid
+      ).length;
 
-  const fetchBookings = async () => {
+      setStats({
+        totalBookings,
+        totalRevenue,
+        paidBookings,
+        pendingBookings,
+        totalCars: cars.length,
+        availableCars: cars.filter((car) => car.available).length,
+      });
+    };
+
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -113,57 +121,39 @@ export default function AdminDashboard() {
           },
         }
       );
-
       if (response.ok) {
         const data = await response.json();
-        console.log("Fetched bookings:", data);
         setBookings(data.bookings);
         calculateStats(data.bookings);
-      } else {
-        console.error("Failed to fetch bookings");
       }
-    } catch (error) {
-      console.error("Error fetching bookings:", error);
+    } catch (error: any) {
+      toast.error(error);
     }
-  };
+  }, [cars, setStats]);
 
-  const fetchCars = async () => {
+  const fetchData = useCallback(async () => {
+    setLoading(true);
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/cars`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        setCars(data.cars);
-      }
+      const fetchCars = async () => {
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/cars`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            setCars(data.cars);
+          }
+        } catch (error) {
+          console.error("Error fetching cars:", error);
+        }
+      };
+      await Promise.all([fetchBookings(), fetchCars()]);
     } catch (error) {
-      console.error("Error fetching cars:", error);
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const calculateStats = (bookingData: Booking[]) => {
-    const totalBookings = bookingData.length;
-    const totalRevenue = bookingData.reduce(
-      (sum, booking) => sum + (booking.amount || 0),
-      0
-    );
-    const paidBookings = bookingData.filter(
-      (booking) => booking.is_paid
-    ).length;
-    const pendingBookings = bookingData.filter(
-      (booking) => !booking.is_paid
-    ).length;
-
-    setStats({
-      totalBookings,
-      totalRevenue,
-      paidBookings,
-      pendingBookings,
-      totalCars: cars.length,
-      availableCars: cars.filter((car) => car.available).length,
-    });
-  };
+  }, [fetchBookings]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -225,41 +215,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // const deleteBooking = async (bookingId: string) => {
-  //   if (!confirm("Apakah Anda yakin ingin menghapus booking ini?")) {
-  //     return;
-  //   }
-
-  //   console.log("Deleting booking with ID:", bookingId);
-
-  //   try {
-  //     const token = localStorage.getItem("token");
-  //     const response = await fetch(
-  //       `${process.env.NEXT_PUBLIC_API_URL}/api/admin/bookings/${bookingId}`,
-  //       {
-  //         method: "DELETE",
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     console.log("Delete response:", response);
-  //     const data = await response.json();
-  //     console.log("Delete response data:", data);
-
-  //     if (response.ok) {
-  //       await fetchBookings();
-  //       toast.success("Booking berhasil dihapus");
-  //     } else {
-  //       toast.error("Gagal menghapus booking");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error deleting booking:", error);
-  //     toast.error("Error deleting booking");
-  //   }
-  // };
 
   const exportToPDF = () => {
     const doc = new jsPDF();
@@ -335,10 +290,6 @@ export default function AdminDashboard() {
           },
         }
       );
-
-      console.log("Delete response:", response);
-      const data = await response.json();
-      console.log("Delete response data:", data);
 
       if (response.ok) {
         await fetchBookings();

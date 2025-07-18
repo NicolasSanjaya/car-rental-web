@@ -83,9 +83,6 @@ export default function RegisterPage() {
           body: JSON.stringify({ email: formData?.email }),
         }
       );
-      const otpData = await otpResponse.json();
-      console.log("OTP Response:", otpResponse);
-      console.log("OTP Data:", otpData);
       if (otpResponse.ok) {
         toast.success("OTP sent successfully!");
         router.push("/otp");

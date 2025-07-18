@@ -165,7 +165,6 @@ export default function MetaMaskPayment({
         }
       );
       const data = await response.json();
-      console.log("data", data);
       if (data.success) {
         onSuccess();
         router.push("/bookings");
