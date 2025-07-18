@@ -58,8 +58,6 @@ export default function MidtransPayment({
 
       const data = await response.json();
 
-      console.log("midtrans data", data);
-
       if (data.token) {
         setSnapToken(data.token);
 
@@ -69,7 +67,7 @@ export default function MidtransPayment({
             console.log("Payment success:", result);
             toast.success("Payment successful!");
             router.push(
-              `/payment/success?order_id=${data.order_id}&status_code=${data.status_code}&transaction_status=${data.transaction_status}`
+              `/payment/success?order_id=${result.order_id}&status_code=${result.status_code}&transaction_status=${result.transaction_status}`
             );
           },
           onPending: function (result: any) {
