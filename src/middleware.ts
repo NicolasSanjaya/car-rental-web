@@ -31,7 +31,7 @@ export function middleware(request: NextRequest) {
   }
 
   // ✅ Akses Role User
-  if (role === "user") {
+  if (!role) {
     const blockedUserPaths = ["/dashboard", "/cars-management"];
     if (blockedUserPaths.includes(pathname)) {
       console.log("⛔ User tidak boleh akses route ini, redirect ke /");

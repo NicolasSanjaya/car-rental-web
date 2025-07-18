@@ -36,6 +36,11 @@ export default function OTPPage() {
     return () => clearInterval(timer);
   }, [formData?.email, router]);
 
+  useEffect(() => {
+    // Fokus input pertama setelah render
+    inputRefs.current[0]?.focus();
+  }, []);
+
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) return;
 
@@ -197,9 +202,11 @@ export default function OTPPage() {
                 {otp.map((digit, index) => (
                   <input
                     key={index}
-                    ref={(el) =>
-                      (inputRefs.current[el ? index : 0] ?? {}).focus()
-                    }
+                    ref={(el) => {
+                      if (el) {
+                        inputRefs.current[index] = el;
+                      }
+                    }}
                     type="text"
                     maxLength={1}
                     value={digit}
