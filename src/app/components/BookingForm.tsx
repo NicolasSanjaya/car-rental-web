@@ -272,13 +272,10 @@ export default function BookingForm({
             {formData.paymentMethod === "midtrans" ? (
               <MidtransPayment
                 bookingData={bookingData}
-                onSuccess={() => {
-                  toast.success("Payment successful!");
-                  onClose();
-                }}
                 onError={(error) => {
-                  alert("Payment failed: " + error);
+                  toast.error("Payment failed: " + error);
                   setShowPayment(false);
+                  onClose();
                 }}
               />
             ) : (

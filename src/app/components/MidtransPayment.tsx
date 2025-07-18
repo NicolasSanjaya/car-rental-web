@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 interface MidtransPaymentProps {
   bookingData: any;
-  onSuccess: () => void;
   onError: (error: string) => void;
 }
 
@@ -17,11 +18,11 @@ declare global {
 
 export default function MidtransPayment({
   bookingData,
-  onSuccess,
   onError,
 }: MidtransPaymentProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [snapToken, setSnapToken] = useState<string>("");
+  const router = useRouter();
 
   useEffect(() => {
     // Load Midtrans Snap script
@@ -57,6 +58,8 @@ export default function MidtransPayment({
 
       const data = await response.json();
 
+      console.log("midtrans data", data);
+
       if (data.token) {
         setSnapToken(data.token);
 
@@ -64,7 +67,10 @@ export default function MidtransPayment({
         window.snap.pay(data.token, {
           onSuccess: function (result: any) {
             console.log("Payment success:", result);
-            onSuccess();
+            toast.success("Payment successful!");
+            router.push(
+              `/payment/success?booking_id=${data.booking_id}&redirect_url=${data.redirect_url}&order_id=${data.order_id}`
+            );
           },
           onPending: function (result: any) {
             console.log("Payment pending:", result);
