@@ -27,7 +27,7 @@ const contactSchema = z.object({
     .min(10, "Message must be at least 10 characters")
     .max(500, "Message must be less than 500 characters"),
   serviceType: z.enum(["rental", "support", "feedback", "other"], {
-    required_error: "Please select a service type",
+    error: "Please select a service type",
   }),
   agreeToTerms: z
     .boolean()
