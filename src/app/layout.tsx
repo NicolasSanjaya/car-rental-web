@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { Metadata } from "next";
 import { Providers } from "./context/Providers";
 import { Bounce, ToastContainer } from "react-toastify";
+import { AOSInit } from "./components/AOSInit";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,6 +32,7 @@ export default function RootLayout({
           transition={Bounce}
           closeOnClick
         />
+        <AOSInit />
         <Providers>{children}</Providers>
       </body>
     </html>

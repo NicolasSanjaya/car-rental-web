@@ -177,14 +177,6 @@ export default function AdminDashboard() {
     });
   };
 
-  // const formatDateShort = (dateString: string) => {
-  //   return new Date(dateString).toLocaleDateString("id-ID", {
-  //     day: "numeric",
-  //     month: "short",
-  //     year: "numeric",
-  //   });
-  // };
-
   const calculateDays = (startDate: string, endDate: string) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -346,7 +338,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen  bg-gradient-to-br from-gray-900 via-black to-gray-900 py-8">
+    <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
@@ -370,7 +362,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
+        <div className="grid md:grid-cols-4 gap-6 mb-8" data-aos="fade-up">
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="flex items-center justify-between">
               <div>
@@ -607,7 +599,7 @@ export default function AdminDashboard() {
           {/* Pagination */}
           <div className="bg-white px-6 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-700">
+              <div className="text-sm text-gray-700 text-wrap">
                 Showing {startIndex + 1} to{" "}
                 {Math.min(startIndex + itemsPerPage, filteredBookings.length)}{" "}
                 of {filteredBookings.length} results
@@ -620,7 +612,7 @@ export default function AdminDashboard() {
                 >
                   Previous
                 </button>
-                <span className="px-3 py-1 text-sm bg-blue-600 text-white rounded">
+                <span className="px-3 py-1 text-sm bg-blue-600 text-white rounded text-wrap text-center whitespace-nowrap">
                   {currentPage} of {totalPages}
                 </span>
                 <button
@@ -643,6 +635,7 @@ export default function AdminDashboard() {
             <div
               className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
               ref={modalRef}
+              data-aos="zoom-in"
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-gray-900">

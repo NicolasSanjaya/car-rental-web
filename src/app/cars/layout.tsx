@@ -15,7 +15,9 @@ export default function CarsLayout({
   return (
     <>
       <Navbar />
-      <main className="pt-24">{children}</main>
+      <main className="pt-24 bg-gradient-to-br from-gray-900 via-black to-gray-900">
+        {children}
+      </main>
     </>
   );
 }

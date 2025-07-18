@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+    <div className="min-h-screen">
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -23,7 +23,7 @@ export default function AboutPage() {
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
-            <div>
+            <div data-aos="fade-right">
               <h3 className="text-3xl font-bold text-white mb-6">Our Story</h3>
               <p className="text-gray-300 mb-4">
                 Founded in 2020, we started with a simple mission: to make car
@@ -43,7 +43,10 @@ export default function AboutPage() {
                 commitment to excellence.
               </p>
             </div>
-            <div className="bg-gray-800 rounded-xl p-8 shadow-2xl">
+            <div
+              className="bg-gray-800 rounded-xl p-8 shadow-2xl"
+              data-aos="fade-left"
+            >
               <h4 className="text-2xl font-bold text-white mb-6">
                 Why Choose Us?
               </h4>
@@ -139,7 +142,7 @@ export default function AboutPage() {
           </div>
 
           {/* Statistics */}
-          <div className="grid md:grid-cols-4 gap-8 mb-16">
+          <div className="grid md:grid-cols-4 gap-8 mb-16" data-aos="fade-up">
             <div className="bg-gray-800 rounded-xl p-6 text-center shadow-2xl">
               <div className="text-3xl font-bold text-red-500 mb-2">5000+</div>
               <div className="text-gray-300">Happy Customers</div>
@@ -159,7 +162,7 @@ export default function AboutPage() {
           </div>
 
           {/* Team Section */}
-          <div className="text-center mb-12">
+          <div className="text-center mb-12" data-aos="fade-down">
             <h3 className="text-3xl font-bold text-white mb-6">Our Team</h3>
             <p className="text-gray-300 mb-8">
               Meet the dedicated professionals who make your car rental
@@ -220,7 +223,7 @@ export default function AboutPage() {
               Get in Touch
             </Link>
             <Link
-              href="/login"
+              href="/cars"
               className="bg-transparent border border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-medium py-3 px-8 rounded-lg transition duration-200"
             >
               Book Now

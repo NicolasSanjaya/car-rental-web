@@ -105,7 +105,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+    <div className="min-h-screen">
       <div className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
@@ -119,7 +119,7 @@ export default function ContactPage() {
 
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Information */}
-            <div className="space-y-8">
+            <div className="space-y-8" data-aos="fade-right">
               <div>
                 <h3 className="text-2xl font-bold text-white mb-6">
                   Contact Information
@@ -231,7 +231,10 @@ export default function ContactPage() {
               </div>
 
               {/* Emergency Contact */}
-              <div className="bg-gray-800 rounded-xl p-6 shadow-2xl">
+              <div
+                className="bg-gray-800 rounded-xl p-6 shadow-2xl"
+                data-aos="fade-right"
+              >
                 <h4 className="text-xl font-bold text-white mb-4">
                   Emergency Support
                 </h4>
@@ -265,7 +268,10 @@ export default function ContactPage() {
             </div>
 
             {/* Contact Form */}
-            <div className="bg-gray-800 rounded-xl p-8 shadow-2xl">
+            <div
+              className="bg-gray-800 rounded-xl p-8 shadow-2xl"
+              data-aos="fade-left"
+            >
               <h3 className="text-2xl font-bold text-white mb-6">
                 Send us a Message
               </h3>
@@ -430,7 +436,7 @@ export default function ContactPage() {
           </div>
 
           {/* FAQ Section */}
-          <div className="mt-16">
+          <div className="mt-16" data-aos="fade-up">
             <h3 className="text-3xl font-bold text-white text-center mb-12">
               Frequently Asked Questions
             </h3>
@@ -482,7 +488,7 @@ export default function ContactPage() {
           </div>
 
           {/* Map Section */}
-          <div className="mt-16">
+          <div className="mt-16" data-aos="zoom-in">
             <h3 className="text-3xl font-bold text-white text-center mb-8">
               Visit Our Location
             </h3>

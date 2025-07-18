@@ -101,6 +101,7 @@ export default function BookingForm({
       <div
         className="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
         ref={modalRef}
+        data-aos="zoom-in"
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">

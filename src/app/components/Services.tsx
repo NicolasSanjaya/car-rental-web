@@ -35,7 +35,7 @@ export default function Services() {
         <h2 className="text-4xl font-bold text-center mb-12">Why Choose Us</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service, index) => (
-            <div key={index} className="text-center">
+            <div key={index} className="text-center" data-aos="zoom-in-up">
               <div className="text-4xl mb-4">{service.icon}</div>
               <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
               <p className="text-white">{service.description}</p>

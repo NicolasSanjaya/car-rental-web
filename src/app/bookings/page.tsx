@@ -365,6 +365,7 @@ export default function BookingPage() {
           <div
             className="bg-gray-800 rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
             ref={modalRef}
+            data-aos="zoom-in"
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-bold text-white">Booking Details</h3>

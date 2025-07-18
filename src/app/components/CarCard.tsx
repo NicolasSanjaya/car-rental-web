@@ -10,7 +10,10 @@ export default function CarCard({ car }: CarCardProps) {
   const router = useRouter();
 
   return (
-    <div className="car-card bg-white rounded-lg shadow-lg overflow-hidden">
+    <div
+      className="car-card bg-white rounded-lg shadow-lg overflow-hidden"
+      data-aos="fade-up"
+    >
       <div className="relative">
         <Image
           src={car.image}
@@ -18,6 +21,7 @@ export default function CarCard({ car }: CarCardProps) {
           className="w-full h-48 object-cover"
           width={500}
           height={300}
+          priority
         />
         <div className="absolute top-4 right-4">
           <span

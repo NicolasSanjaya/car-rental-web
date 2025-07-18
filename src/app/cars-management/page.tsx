@@ -356,7 +356,7 @@ export default function CarManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 py-8">
+    <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
@@ -371,7 +371,7 @@ export default function CarManagement() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid md:grid-cols-3 gap-6 mb-8" data-aos="fade-up">
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="flex items-center justify-between">
               <div>
@@ -559,7 +559,7 @@ export default function CarManagement() {
               >
                 Previous
               </button>
-              <span className="px-3 py-1 text-sm bg-blue-600 text-white rounded">
+              <span className="px-3 py-1 text-sm bg-blue-600 text-white rounded whitespace-nowrap">
                 {currentPage} of {totalPages}
               </span>
               <button
@@ -581,6 +581,7 @@ export default function CarManagement() {
             <div
               className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
               ref={modalRef}
+              data-aos="zoom-in"
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-gray-900">
@@ -791,6 +792,7 @@ export default function CarManagement() {
             <div
               className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl transform transition-all"
               ref={modalRef}
+              data-aos="zoom-in"
             >
               {/* Header */}
               <div className="flex items-center justify-between mb-4">

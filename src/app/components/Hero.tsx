@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Hero() {
   return (
     <section className="min-h-screen flex items-center justify-center text-white bg-gradient-to-br from-gray-900 via-black to-gray-900">
-      <div className="container mx-auto px-4 text-center">
+      <div className="container mx-auto px-4 text-center" data-aos="fade-up">
         <h1 className="text-6xl font-bold mb-6">
           Elite Sports Car <span className="text-red-500">Rental</span>
         </h1>
