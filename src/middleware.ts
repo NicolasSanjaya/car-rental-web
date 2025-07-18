@@ -44,7 +44,7 @@ export function middleware(request: NextRequest) {
       "/dashboard",
       "/cars-management",
     ].includes(pathname);
-    if (userNotLoginRoutes) {
+    if (!token && userNotLoginRoutes) {
       console.log("⛔ User belum login, redirect ke /login");
       return NextResponse.redirect(new URL("/", request.url));
     }
