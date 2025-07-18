@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // app/components/Navbar.tsx
 "use client";
 
@@ -14,7 +15,7 @@ export default function Navbar() {
 
   useEffect(() => {
     checkAuthStatus();
-  }, [checkAuthStatus]);
+  }, []);
 
   const handleLogout = () => {
     logout();
