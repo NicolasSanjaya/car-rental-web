@@ -69,7 +69,7 @@ export default function MidtransPayment({
             console.log("Payment success:", result);
             toast.success("Payment successful!");
             router.push(
-              `/payment/success?booking_id=${data.booking_id}&redirect_url=${data.redirect_url}&order_id=${data.order_id}`
+              `/payment/success?order_id=${data.order_id}&status_code=${data.status_code}&transaction_status=${data.transaction_status}`
             );
           },
           onPending: function (result: any) {
