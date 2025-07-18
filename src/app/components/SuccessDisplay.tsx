@@ -39,7 +39,7 @@ export default function SuccessDisplay() {
 
         // Kirim notification ke backend
         const response = await fetch(
-          "http://localhost:4000/api/payment/notification",
+          `${process.env.NEXT_PUBLIC_API_URL}/api/payment/notification`,
           {
             method: "POST",
             headers: {
