@@ -5,6 +5,11 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const role = request.cookies.get("role")?.value;
 
+  console.log({
+    token,
+    role,
+  });
+
   // 🔒 Redirect user yang sudah login ke home jika akses /login
   if (token) {
     const alreadyLoginRoutes = [
