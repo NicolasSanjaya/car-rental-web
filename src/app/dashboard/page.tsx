@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -54,6 +55,8 @@ export default function AdminDashboard() {
   const modalRef = useRef<HTMLDivElement>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null);
+
+  console.log("loading", loading);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -137,7 +140,7 @@ export default function AdminDashboard() {
       const fetchCars = async () => {
         try {
           const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/cars`
+            `${process.env.NEXT_PUBLIC_API_URL}/cars`
           );
           if (response.ok) {
             const data = await response.json();
@@ -154,6 +157,10 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   }, [fetchBookings]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -214,7 +221,6 @@ export default function AdminDashboard() {
       setShowBookingModal(false);
     }
   };
-
 
   const exportToPDF = () => {
     const doc = new jsPDF();
