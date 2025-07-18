@@ -163,9 +163,9 @@ export default function AdminDashboard() {
   }, []);
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("id-ID", {
+    return new Intl.NumberFormat("us-US", {
       style: "currency",
-      currency: "IDR",
+      currency: "USD",
     }).format(amount);
   };
 
