@@ -1,13 +1,7 @@
 // app/context/UserContext.tsx
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 import { toast } from "react-toastify";
 
 type User = {
@@ -35,36 +29,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const checkAuthStatus = async () => {
     setIsLoading(true);
     try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setUser(null);
-        setIsLoading(false);
-        return;
-      }
-
-      // 1. Ambil payload dari token JWT
-      const payloadBase64 = token.split(".")[1];
-      const decodedPayload = JSON.parse(atob(payloadBase64));
-
-      // 2. Cek waktu kedaluwarsa (exp)
-      // `exp` adalah Unix timestamp dalam detik, `Date.now()` dalam milidetik
-      const expirationTime = decodedPayload.exp * 1000;
-
-      if (Date.now() > expirationTime) {
-        localStorage.removeItem("token");
-        logout(); // Panggil fungsi logout jika token sudah kedaluwarsa
-        setIsLoading(false);
-        return;
-      }
       // Verify token with your backend
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/profile`,
         {
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            credentials: "include",
-            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -73,7 +44,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         const userData = await response.json();
         setUser(userData.data.user);
       } else {
-        localStorage.removeItem("token");
+        setUser(null);
       }
     } catch (error) {
       console.error("Auth check failed:", error);
@@ -84,9 +55,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Call checkAuthStatus on mount to verify user session
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
 
   const logout = async () => {
     try {
@@ -97,14 +65,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
       const data = await response.json();
       if (response.ok) {
         setUser(null);
-        localStorage.removeItem("token");
         toast.success(data.message || "Logout successful");
       }
     } catch (error) {

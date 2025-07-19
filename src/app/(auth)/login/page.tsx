@@ -30,19 +30,21 @@ export default function LoginPage() {
         }
       );
 
+      console.log({ response });
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("token", data.data.token);
+        // localStorage.setItem("token", data.data.token);
         setUser({
           id: data.data.user.id,
           email: data.data.user.email,
           full_name: data.data.user.full_name,
         });
         toast.success("Login successful!");
+        console.log("ROLE", data.data.user.role);
         if (data.data.user.role === "admin") {
           router.push("/dashboard");
-        } else if (data.data.user.role === "user") {
+        } else {
           router.push("/");
         }
       } else {

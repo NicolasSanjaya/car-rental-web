@@ -17,6 +17,7 @@ export default function Navbar() {
 
   useEffect(() => {
     checkAuthStatus();
+    console.log("cookie", document.cookie);
   }, []);
 
   const handleLogout = () => {
