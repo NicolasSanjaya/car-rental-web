@@ -4,27 +4,45 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "../context/UserContext";
+import { logoutAction } from "../(auth)/login/actions";
+import { toast } from "react-toastify";
+
+const initialState = {
+  success: false,
+  message: "",
+  error: false,
+  data: null,
+};
 
 export default function Navbar() {
-  const { user, logout, loading, checkAuthStatus } = useUser();
+  const { user, loading, checkAuthStatus } = useUser();
   const [showUserMenu, setShowUserMenu] = useState(false);
   // State baru untuk mengontrol visibilitas menu mobile
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
+  const [state, formAction] = useActionState(logoutAction, initialState);
+
+  console.log({ user });
+
+  console.log("logout data navbar", state);
+
+  useEffect(() => {
+    if (state?.data?.success === true) {
+      setShowUserMenu(false);
+      setIsMenuOpen(false);
+      toast.success(state?.data?.message);
+      router.push("/");
+    } else {
+      toast.error(state?.data?.message);
+    }
+  }, [state]);
 
   useEffect(() => {
     checkAuthStatus();
   }, []);
-
-  const handleLogout = () => {
-    logout();
-    setShowUserMenu(false);
-    setIsMenuOpen(false); // Tutup menu mobile saat logout
-    router.push("/");
-  };
 
   // Fungsi untuk menutup semua menu, berguna saat navigasi
   const closeAllMenus = () => {
@@ -123,10 +141,10 @@ export default function Navbar() {
                 >
                   <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
                     <span className="text-sm font-bold">
-                      {user.full_name.charAt(0).toUpperCase()}
+                      {user?.full_name.charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  <span className="hover:text-red-500">{user.full_name}</span>
+                  <span className="hover:text-red-500">{user?.full_name}</span>
                   <svg
                     className={`w-4 h-4 transition-transform ${
                       showUserMenu ? "rotate-180" : ""
@@ -152,7 +170,7 @@ export default function Navbar() {
                     >
                       Profile
                     </Link>
-                    {user.role === "user" && (
+                    {user?.role === "user" && (
                       <Link
                         href="/bookings"
                         className="block px-4 py-2 hover:bg-gray-100"
@@ -162,12 +180,14 @@ export default function Navbar() {
                       </Link>
                     )}
                     <hr className="my-2" />
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
-                    >
-                      Logout
-                    </button>
+                    <form action={formAction}>
+                      <button
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
+                        type="submit"
+                      >
+                        Logout
+                      </button>
+                    </form>
                   </div>
                 )}
               </div>
@@ -255,7 +275,7 @@ export default function Navbar() {
                   >
                     Profile ({user.full_name})
                   </Link>
-                  {user.role === "user" && (
+                  {user?.role === "user" && (
                     <Link
                       href="/bookings"
                       className="hover:text-red-500 transition"
@@ -264,12 +284,14 @@ export default function Navbar() {
                       My Bookings
                     </Link>
                   )}
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-center py-2 text-red-500"
-                  >
-                    Logout
-                  </button>
+                  <form action={formAction}>
+                    <button
+                      className="w-full text-center py-2 text-red-500"
+                      type="submit"
+                    >
+                      Logout
+                    </button>
+                  </form>
                 </>
               ) : (
                 <>

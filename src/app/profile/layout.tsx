@@ -1,8 +1,6 @@
 // app/layout.tsx
 import Navbar from "@/app/components/Navbar";
 import { Metadata } from "next";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Profile",
@@ -14,14 +12,6 @@ export default async function PrivacyLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
-
-  console.log("cookie", cookieStore.getAll());
-
-  if (!token) {
-    redirect("/login"); // redirect jika cookie 'token' tidak ada
-  }
   return (
     <>
       <Navbar />

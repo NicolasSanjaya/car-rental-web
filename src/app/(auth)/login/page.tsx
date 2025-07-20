@@ -1,62 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { useUser } from "@/app/context/UserContext";
+import { loginAction } from "@/app/(auth)/login/actions";
+
+const initialState = {
+  success: false,
+  message: "",
+  error: false,
+  data: null,
+};
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const [state, formAction, isPending] = useActionState(
+    loginAction,
+    initialState
+  );
   const { setUser } = useUser();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
-
-      console.log({ response });
-      const data = await response.json();
-
-      if (response.ok) {
-        // localStorage.setItem("token", data.data.token);
-        setUser({
-          id: data.data.user.id,
-          email: data.data.user.email,
-          full_name: data.data.user.full_name,
-        });
-        toast.success("Login successful!");
-        console.log("ROLE", data.data.user.role);
-        if (data.data.user.role === "admin") {
-          router.push("/dashboard");
-        } else {
-          router.push("/");
-        }
+  useEffect(() => {
+    if (state) {
+      setUser({
+        id: state?.data?.data?.user.id,
+        full_name: state?.data?.data?.user.full_name,
+        email: state?.data?.data?.user.email,
+        role: state?.data?.data?.user.role,
+      });
+      if (state?.data?.success === false) {
+        toast.error(state?.data?.message);
       } else {
-        toast.error(data.message || "Login failed");
+        toast.success(state?.data?.message);
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      toast.error("An error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
+      if (state?.data?.data?.user.role === "admin") {
+        router.push("/dashboard");
+      } else if (state?.data?.data?.user.role === "user") {
+        router.push("/");
+      }
     }
-  };
+  }, [state, router, setUser]);
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -70,7 +58,7 @@ export default function LoginPage() {
           className="bg-gray-800 rounded-xl p-8 shadow-2xl"
           data-aos="zoom-in"
         >
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form action={formAction} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Email Address
@@ -82,6 +70,7 @@ export default function LoginPage() {
                 className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 placeholder="Enter your email"
                 required
+                name="email"
               />
             </div>
 
@@ -97,6 +86,7 @@ export default function LoginPage() {
                   className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent pr-12"
                   placeholder="Enter your password"
                   required
+                  name="password"
                 />
                 <button
                   type="button"
@@ -160,10 +150,10 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isPending}
               className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
-              {isLoading ? (
+              {isPending ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               ) : (
                 "Sign In"
