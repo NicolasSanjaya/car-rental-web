@@ -53,14 +53,14 @@ export default function CarCard({ car }: CarCardProps) {
           ))}
         </div>
 
-        <div className="flex justify-between items-center">
-          <span className="text-2xl font-bold text-red-500">
+        <div className="flex flex-row gap-2 justify-between items-center">
+          <span className="text-md lg:text-2xl font-bold text-red-500">
             ${car.price}/day
           </span>
-          <div className="space-x-2 flex items-center justify-center">
+          <div className="flex items-center justify-center">
             <button
               onClick={() => router.push(`/cars/${car.id}`)}
-              className={`px-4 py-2 rounded font-semibold transition cursor-pointer ${
+              className={`whitespace-nowrap px-4 py-2 rounded font-semibold transition cursor-pointer ${
                 car.is_available
                   ? "bg-red-500 text-white hover:bg-red-600"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"

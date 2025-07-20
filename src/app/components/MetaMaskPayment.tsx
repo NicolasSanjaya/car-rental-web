@@ -148,8 +148,8 @@ export default function MetaMaskPayment({
         `${process.env.NEXT_PUBLIC_API_URL}/api/payment`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({

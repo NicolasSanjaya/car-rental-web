@@ -98,7 +98,6 @@ export default function ProfilePage() {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
       let endpoint = "";
       let body = {};
 
@@ -129,8 +128,8 @@ export default function ProfilePage() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
         body: JSON.stringify(body),
       });
 

@@ -112,12 +112,10 @@ export default function AdminDashboard() {
     };
 
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/bookings`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           credentials: "include",
@@ -186,13 +184,12 @@ export default function AdminDashboard() {
 
   const updateBookingStatus = async (bookingId: string, isPaid: boolean) => {
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/bookings/${bookingId}/status`,
         {
           method: "PUT",
+          credentials: "include",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ is_paid: isPaid }),
@@ -276,13 +273,12 @@ export default function AdminDashboard() {
     if (!bookingToDelete) return;
 
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/bookings/${bookingToDelete.id}`,
         {
           method: "DELETE",
+          credentials: "include",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }

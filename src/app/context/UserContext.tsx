@@ -1,7 +1,13 @@
 // app/context/UserContext.tsx
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 import { toast } from "react-toastify";
 
 type User = {
@@ -25,6 +31,10 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
 
   const checkAuthStatus = async () => {
     setIsLoading(true);
@@ -69,6 +79,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         }
       );
       const data = await response.json();
+
+      console.log("data logout", data);
       if (response.ok) {
         setUser(null);
         toast.success(data.message || "Logout successful");

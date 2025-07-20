@@ -48,8 +48,8 @@ export default function MidtransPayment({
         `${process.env.NEXT_PUBLIC_API_URL}/api/payment/midtrans`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ bookingData }),

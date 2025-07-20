@@ -109,10 +109,9 @@ export default function CarManagement() {
   const fetchCars = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cars`, {
+        credentials: "include",
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -201,7 +200,6 @@ export default function CarManagement() {
     setUploading(true);
 
     try {
-      const token = localStorage.getItem("token");
       const formDataToSend = new FormData();
 
       formDataToSend.append("brand", formData.brand);
@@ -223,9 +221,7 @@ export default function CarManagement() {
 
       const response = await fetch(url, {
         method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: "include",
         body: formDataToSend,
       });
 
@@ -263,14 +259,11 @@ export default function CarManagement() {
   const deleteCar = async (carId: string) => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/cars/${carId}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          credentials: "include",
         }
       );
 
@@ -293,13 +286,12 @@ export default function CarManagement() {
 
   const toggleAvailability = async (carId: string, currentStatus: boolean) => {
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/cars/${carId}/availability`,
         {
           method: "PATCH",
+          credentials: "include",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ is_available: !currentStatus }),

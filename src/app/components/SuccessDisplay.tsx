@@ -42,8 +42,8 @@ export default function SuccessDisplay() {
           `${process.env.NEXT_PUBLIC_API_URL}/api/payment/notification`,
           {
             method: "POST",
+            credentials: "include",
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify(paymentParams),
