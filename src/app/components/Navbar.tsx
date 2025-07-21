@@ -17,7 +17,7 @@ const initialState = {
 };
 
 export default function Navbar() {
-  const { user, loading, checkAuthStatus } = useUser();
+  const { user, loading } = useUser();
   const [showUserMenu, setShowUserMenu] = useState(false);
   // State baru untuk mengontrol visibilitas menu mobile
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,8 +25,6 @@ export default function Navbar() {
   const [state, formAction] = useActionState(logoutAction, initialState);
 
   console.log({ user });
-
-  console.log("logout data navbar", state);
 
   useEffect(() => {
     if (state?.data?.success === true) {
@@ -38,10 +36,6 @@ export default function Navbar() {
       toast.error(state?.data?.message);
     }
   }, [state]);
-
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
 
   // Fungsi untuk menutup semua menu, berguna saat navigasi
   const closeAllMenus = () => {

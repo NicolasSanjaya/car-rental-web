@@ -15,7 +15,6 @@ export async function loginAction(
   prevState: any,
   formData: FormData
 ): Promise<LoginState> {
-  console.log({ formData });
   const email = formData.get("email");
   const password = formData.get("password");
 
@@ -40,8 +39,6 @@ export async function loginAction(
         data: null,
       };
     }
-
-    console.log("user", data.data.user);
     const token = data.data.token;
 
     // Set cookie secara manual
@@ -86,7 +83,6 @@ export async function loginAction(
 
 export async function logoutAction() {
   const cookieStore = await cookies();
-  console.log(cookieStore.get("token"));
 
   try {
     const response = await fetch(
@@ -101,8 +97,6 @@ export async function logoutAction() {
       }
     );
     const data = await response.json();
-
-    console.log("logout data action", data);
     if (data.success) {
       // Hapus semua cookies
       cookieStore.delete("token");

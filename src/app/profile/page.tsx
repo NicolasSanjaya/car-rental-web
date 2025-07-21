@@ -14,12 +14,9 @@ import {
 } from "lucide-react";
 import { useUser } from "../context/UserContext";
 import { toast } from "react-toastify";
-import useSWR, { mutate } from "swr";
-
-// const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function ProfilePage() {
-  const { user, loading, checkAuthStatus } = useUser();
+  const { user, loading } = useUser();
   const [editing, setEditing] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -32,12 +29,8 @@ export default function ProfilePage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const { data } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/auth/profile`,
-    checkAuthStatus
-  );
 
-  console.log("data", data);
+  console.log("document cookie", document.cookie);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -128,6 +121,7 @@ export default function ProfilePage() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${document.cookie.split("=")[1]}`,
         },
         credentials: "include",
         body: JSON.stringify(body),
@@ -136,7 +130,6 @@ export default function ProfilePage() {
       const data = await response.json();
 
       if (response.ok) {
-        mutate(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/profile`); // Revalidate the profile data
         toast.success(data.message);
         setEditing(null);
         if (field === "password") {

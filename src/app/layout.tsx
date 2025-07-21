@@ -23,7 +23,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const { user } = await checkUserSession();
-  console.log("user action", user);
   return (
     <html lang="en">
       <body className={inter.className}>
