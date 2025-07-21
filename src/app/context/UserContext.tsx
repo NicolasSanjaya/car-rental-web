@@ -8,13 +8,7 @@ import {
   ReactNode,
   useEffect,
 } from "react";
-
-type User = {
-  email: string;
-  full_name: string;
-  id: number; // Assuming id is a unique identifier for the user
-  role?: "admin" | "user"; // Assuming roles are either 'admin' or 'user'
-};
+import { User } from "../types/user";
 
 type UserContextType = {
   user: User | null;
@@ -26,8 +20,14 @@ type UserContextType = {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+export const UserProvider = ({
+  children,
+  initialUser,
+}: {
+  children: ReactNode;
+  initialUser?: User;
+}) => {
+  const [user, setUser] = useState<User | null>(initialUser || null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -44,6 +44,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            // Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );

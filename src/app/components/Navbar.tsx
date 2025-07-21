@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // app/components/Navbar.tsx
 "use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { useActionState, useEffect, useState } from "react";

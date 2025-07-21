@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import { Providers } from "./context/Providers";
 import { Bounce, ToastContainer } from "react-toastify";
 import { AOSInit } from "./components/AOSInit";
+import { checkUserSession } from "./context/actions";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,11 +17,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { user } = await checkUserSession();
+  console.log("user action", user);
   return (
     <html lang="en">
       <body className={inter.className}>
@@ -33,7 +36,7 @@ export default function RootLayout({
           closeOnClick
         />
         <AOSInit />
-        <Providers>{children}</Providers>
+        <Providers initialUser={user}>{children}</Providers>
       </body>
     </html>
   );
