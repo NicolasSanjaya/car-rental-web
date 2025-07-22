@@ -7,6 +7,14 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { useForm } from "@/app/context/RegisterContext";
 import { useUser } from "@/app/context/UserContext";
+import { registerAction } from "./actions";
+
+const initialState = {
+  success: false,
+  message: "",
+  error: false,
+  data: null,
+};
 
 export default function OTPPage() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -92,32 +100,40 @@ export default function OTPPage() {
         }
       );
       const verifyOtpData = await verifyOtp.json();
+
       if (verifyOtp.ok) {
         toast.success("OTP verified successfully!");
-        // Register the user after OTP verification
-        const register = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              full_name: formData?.name,
-              email: formData?.email,
-              password: formData?.password,
-            }),
-          }
-        );
 
-        const registerData = await register.json();
-        localStorage.setItem("token", registerData.data.token);
-        setUser({
-          email: formData?.email || "",
-          full_name: formData?.name || "",
-          id: registerData.data.user.id,
-        });
-        router.push("/dashboard");
+        const newFormData = new FormData();
+        if (formData) {
+          Object.entries(formData as Record<string, string>).forEach(
+            ([key, value]) => {
+              newFormData.append(key, value);
+            }
+          );
+        }
+
+        // Register the user after OTP verification
+        const status = await registerAction(initialState, newFormData);
+        console.log("register status submit", status);
+        if (status) {
+          setUser({
+            id: status?.data?.data?.user.id,
+            full_name: status?.data?.data?.user.full_name,
+            email: status?.data?.data?.user.email,
+            role: status?.data?.data?.user.role,
+          });
+          if (status?.success === false && status?.message !== "") {
+            toast.error(status?.message);
+          } else if (status?.success === true && status?.message !== "") {
+            toast.success(status?.message);
+          }
+          if (status?.data?.data?.user.role === "admin") {
+            router.push("/dashboard");
+          } else if (status?.data?.data?.user.role === "user") {
+            router.push("/");
+          }
+        }
       } else {
         toast.error(verifyOtpData.message || "OTP verification failed");
       }

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useState, useEffect, useRef } from "react";
 import {
@@ -15,6 +16,8 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import { useUser } from "../context/UserContext";
+import CarImage from "../components/CarImage";
 
 interface Car {
   id: string;
@@ -56,8 +59,9 @@ export default function CarManagement() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [carToDelete, setCarToDelete] = useState<Car | null>(null);
+  const { token } = useUser();
 
-  const [formData, setFormData] = useState<CarFormData>({
+  const [dataForm, setDataForm] = useState<CarFormData>({
     brand: "",
     model: "",
     year: new Date().getFullYear(),
@@ -113,6 +117,7 @@ export default function CarManagement() {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -133,7 +138,7 @@ export default function CarManagement() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setFormData({ ...formData, image: file });
+      setDataForm({ ...dataForm, image: file });
       const reader = new FileReader();
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string);
@@ -144,23 +149,23 @@ export default function CarManagement() {
 
   const addFeature = () => {
     if (newFeature.trim()) {
-      setFormData({
-        ...formData,
-        features: [...formData.features, newFeature.trim()],
+      setDataForm({
+        ...dataForm,
+        features: [...dataForm.features, newFeature.trim()],
       });
       setNewFeature("");
     }
   };
 
   const removeFeature = (index: number) => {
-    setFormData({
-      ...formData,
-      features: formData.features.filter((_, i) => i !== index),
+    setDataForm({
+      ...dataForm,
+      features: dataForm.features.filter((_, i) => i !== index),
     });
   };
 
   const resetForm = () => {
-    setFormData({
+    setDataForm({
       brand: "",
       model: "",
       year: new Date().getFullYear(),
@@ -178,7 +183,7 @@ export default function CarManagement() {
   const openModal = (car?: Car) => {
     if (car) {
       setSelectedCar(car);
-      setFormData({
+      setDataForm({
         brand: car.brand,
         model: car.model,
         year: car.year,
@@ -202,16 +207,18 @@ export default function CarManagement() {
     try {
       const formDataToSend = new FormData();
 
-      formDataToSend.append("brand", formData.brand);
-      formDataToSend.append("model", formData.model);
-      formDataToSend.append("year", formData.year.toString());
-      formDataToSend.append("is_available", formData.is_available.toString());
-      formDataToSend.append("price", formData.price.toString());
-      formDataToSend.append("features", JSON.stringify(formData.features));
+      const plainData = { ...dataForm };
 
-      if (formData.image) {
-        formDataToSend.append("image", formData.image);
-      }
+      // formDataToSend.append("brand", dataForm.brand);
+      // formDataToSend.append("model", dataForm.model);
+      // formDataToSend.append("year", dataForm.year.toString());
+      // formDataToSend.append("is_available", dataForm.is_available.toString());
+      // formDataToSend.append("price", dataForm.price.toString());
+      // formDataToSend.append("features", JSON.stringify(dataForm.features));
+
+      // if (dataForm.image !== null) {
+      //   formDataToSend.append("image", dataForm.image);
+      // }
 
       const url = isEditing
         ? `${process.env.NEXT_PUBLIC_API_URL}/api/admin/cars/${selectedCar?.id}`
@@ -219,11 +226,21 @@ export default function CarManagement() {
 
       const method = isEditing ? "PUT" : "POST";
 
+      console.log({ formDataToSend });
+
       const response = await fetch(url, {
         method,
         credentials: "include",
-        body: formDataToSend,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(plainData),
       });
+
+      const data = await response.json();
+
+      console.log(data);
 
       if (response.ok) {
         toast.success(`Car ${isEditing ? "updated" : "created"} successfully`);
@@ -264,6 +281,10 @@ export default function CarManagement() {
         {
           method: "DELETE",
           credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -272,6 +293,7 @@ export default function CarManagement() {
       if (data.success) {
         toast.success("Car deleted successfully");
         await fetchCars();
+        setCurrentPage(Math.max(1, currentPage - 1));
       } else {
         toast.error("Failed to delete car");
       }
@@ -293,6 +315,7 @@ export default function CarManagement() {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ is_available: !currentStatus }),
         }
@@ -325,6 +348,7 @@ export default function CarManagement() {
   });
 
   const totalPages = Math.ceil(filteredCars.length / itemsPerPage);
+  // const totalPages = 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentCars = filteredCars.slice(startIndex, startIndex + itemsPerPage);
 
@@ -449,13 +473,7 @@ export default function CarManagement() {
               className="bg-white rounded-lg shadow-md overflow-hidden"
             >
               <div className="relative">
-                <Image
-                  src={car?.image || "/images/no-image.png"}
-                  alt={"/images/no-image.png"}
-                  className="w-full h-48 object-cover"
-                  width={640}
-                  height={384}
-                />
+                <CarImage src={car?.image || "/images/no-image.png"} />
                 <div className="absolute top-2 right-2">
                   <span
                     className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -595,9 +613,9 @@ export default function CarManagement() {
                     </label>
                     <input
                       type="text"
-                      value={formData.brand}
+                      value={dataForm.brand}
                       onChange={(e) =>
-                        setFormData({ ...formData, brand: e.target.value })
+                        setDataForm({ ...dataForm, brand: e.target.value })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
@@ -609,9 +627,9 @@ export default function CarManagement() {
                     </label>
                     <input
                       type="text"
-                      value={formData.model}
+                      value={dataForm.model}
                       onChange={(e) =>
-                        setFormData({ ...formData, model: e.target.value })
+                        setDataForm({ ...dataForm, model: e.target.value })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
@@ -626,10 +644,10 @@ export default function CarManagement() {
                     </label>
                     <input
                       type="number"
-                      value={formData.year}
+                      value={dataForm.year}
                       onChange={(e) =>
-                        setFormData({
-                          ...formData,
+                        setDataForm({
+                          ...dataForm,
                           year: parseInt(e.target.value),
                         })
                       }
@@ -645,10 +663,10 @@ export default function CarManagement() {
                     </label>
                     <input
                       type="number"
-                      value={formData.price}
+                      value={dataForm.price}
                       onChange={(e) =>
-                        setFormData({
-                          ...formData,
+                        setDataForm({
+                          ...dataForm,
                           price: parseFloat(e.target.value),
                         })
                       }
@@ -716,7 +734,7 @@ export default function CarManagement() {
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {formData.features.map((feature, index) => (
+                    {dataForm.features.map((feature, index) => (
                       <span
                         key={index}
                         className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded"
@@ -738,10 +756,10 @@ export default function CarManagement() {
                   <input
                     type="checkbox"
                     id="is_available"
-                    checked={formData.is_available}
+                    checked={dataForm.is_available}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
+                      setDataForm({
+                        ...dataForm,
                         is_available: e.target.checked,
                       })
                     }

@@ -37,7 +37,7 @@ interface Booking {
 }
 
 export default function BookingPage() {
-  const { user, loading } = useUser();
+  const { user, loading, token } = useUser();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,6 +53,9 @@ export default function BookingPage() {
         `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/user/${user?.id}`,
         {
           credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -68,7 +71,7 @@ export default function BookingPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [user, token]);
 
   useEffect(() => {
     if (user) {

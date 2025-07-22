@@ -4,6 +4,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { useUser } from "../context/UserContext";
 
 interface MidtransPaymentProps {
   bookingData: any;
@@ -23,6 +24,7 @@ export default function MidtransPayment({
   const [loading, setLoading] = useState<boolean>(false);
   const [snapToken, setSnapToken] = useState<string>("");
   const router = useRouter();
+  const { token } = useUser();
 
   useEffect(() => {
     // Load Midtrans Snap script
@@ -51,6 +53,7 @@ export default function MidtransPayment({
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ bookingData }),
         }

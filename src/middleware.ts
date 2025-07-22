@@ -26,11 +26,14 @@ export function middleware(request: NextRequest) {
   if (role === "admin") {
     const allowedAdminPaths = ["/dashboard", "/profile", "/cars-management"];
     if (!allowedAdminPaths.includes(pathname)) {
+      console.log("redirect");
       console.log(
         "⛔ Admin tidak boleh akses route ini, redirect ke /dashboard"
       );
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
+    console.log("tidak redirect");
+    return;
   }
 
   // ✅ Akses Role User
@@ -43,6 +46,14 @@ export function middleware(request: NextRequest) {
   }
 
   if (!token && pathname === "/profile") {
+    console.log("⛔ User tidak boleh akses route ini, redirect ke /login");
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+  if (!token && pathname === "/bookings") {
+    console.log("⛔ User tidak boleh akses route ini, redirect ke /login");
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+  if (!token && pathname === "/payment/success") {
     console.log("⛔ User tidak boleh akses route ini, redirect ke /login");
     return NextResponse.redirect(new URL("/login", request.url));
   }

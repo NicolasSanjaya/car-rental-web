@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useUser } from "../context/UserContext";
 
 interface PaymentParams {
   order_id: string;
@@ -15,6 +16,7 @@ export default function SuccessDisplay() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const { token } = useUser();
 
   useEffect(() => {
     const processPayment = async () => {
@@ -45,6 +47,7 @@ export default function SuccessDisplay() {
             credentials: "include",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(paymentParams),
           }
@@ -73,7 +76,7 @@ export default function SuccessDisplay() {
     };
 
     processPayment();
-  }, [searchParams, router]);
+  }, [searchParams, router, token]);
 
   const handleReturnToBookings = () => {
     router.push("/bookings");

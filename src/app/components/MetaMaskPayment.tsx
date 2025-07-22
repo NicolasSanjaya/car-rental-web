@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Car } from "../types/car";
 import { useRouter } from "next/navigation";
+import { useUser } from "../context/UserContext";
 
 interface MetaMaskPaymentProps {
   bookingData: any;
@@ -27,6 +28,7 @@ export default function MetaMaskPayment({
   const [account, setAccount] = useState<string>("");
   const [connected, setConnected] = useState<boolean>(false);
   const router = useRouter();
+  const { token } = useUser();
 
   // Sepolia testnet configuration
   const SEPOLIA_CHAIN_ID = "0xaa36a7";
@@ -151,6 +153,7 @@ export default function MetaMaskPayment({
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             paymentData: {

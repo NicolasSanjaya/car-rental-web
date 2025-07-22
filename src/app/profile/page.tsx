@@ -14,9 +14,10 @@ import {
 } from "lucide-react";
 import { useUser } from "../context/UserContext";
 import { toast } from "react-toastify";
+import { checkUserSession } from "../context/actions";
 
 export default function ProfilePage() {
-  const { user, loading } = useUser();
+  const { user, loading, token, setUser } = useUser();
   const [editing, setEditing] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -29,8 +30,6 @@ export default function ProfilePage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-
-  console.log("document cookie", document.cookie);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -121,7 +120,7 @@ export default function ProfilePage() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${document.cookie.split("=")[1]}`,
+          Authorization: `Bearer ${token}`,
         },
         credentials: "include",
         body: JSON.stringify(body),
@@ -130,6 +129,8 @@ export default function ProfilePage() {
       const data = await response.json();
 
       if (response.ok) {
+        const { user } = await checkUserSession();
+        setUser(user);
         toast.success(data.message);
         setEditing(null);
         if (field === "password") {
@@ -159,8 +160,8 @@ export default function ProfilePage() {
     if (user) {
       setFormData((prev) => ({
         ...prev,
-        full_name: user?.full_name,
-        email: user?.email,
+        full_name: user?.full_name || "",
+        email: user?.email || "",
         current_password: "",
         new_password: "",
         confirm_password: "",

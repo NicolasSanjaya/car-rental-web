@@ -5,8 +5,9 @@ import { createContext, useContext, useState, ReactNode } from "react";
 import { User } from "../types/user";
 
 type UserContextType = {
+  token?: string | null;
   user: User | null;
-  setUser: (user: User) => void;
+  setUser: (user: User | null) => void;
   loading?: boolean;
   setIsLoading?: (loading: boolean) => void;
 };
@@ -16,9 +17,11 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({
   children,
   initialUser,
+  token,
 }: {
   children: ReactNode;
-  initialUser?: User;
+  initialUser?: User | null;
+  token?: string | null;
 }) => {
   const [user, setUser] = useState<User | null>(initialUser || null);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,6 +33,7 @@ export const UserProvider = ({
         setUser,
         loading: isLoading,
         setIsLoading,
+        token,
       }}
     >
       {children}

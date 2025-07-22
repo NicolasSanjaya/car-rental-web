@@ -16,7 +16,7 @@ export default function CarCard({ car }: CarCardProps) {
     >
       <div className="relative">
         <Image
-          src={car.image}
+          src={car.image || "/images/no-image.png"}
           alt={`${car.brand} ${car.model}`}
           className="w-full h-48 object-cover"
           width={500}

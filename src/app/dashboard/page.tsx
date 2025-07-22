@@ -22,6 +22,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { Booking } from "../types/booking";
 import { Car } from "../types/car";
+import { useUser } from "../context/UserContext";
 
 interface Stats {
   totalBookings: number;
@@ -55,6 +56,7 @@ export default function AdminDashboard() {
   const modalRef = useRef<HTMLDivElement>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null);
+  const { token } = useUser();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -117,6 +119,7 @@ export default function AdminDashboard() {
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           credentials: "include",
         }
@@ -191,6 +194,7 @@ export default function AdminDashboard() {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ is_paid: isPaid }),
         }
@@ -280,6 +284,7 @@ export default function AdminDashboard() {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         }
       );

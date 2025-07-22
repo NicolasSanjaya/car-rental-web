@@ -17,25 +17,36 @@ const initialState = {
 };
 
 export default function Navbar() {
-  const { user, loading } = useUser();
+  const { user, loading, setUser } = useUser();
   const [showUserMenu, setShowUserMenu] = useState(false);
   // State baru untuk mengontrol visibilitas menu mobile
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const [state, formAction] = useActionState(logoutAction, initialState);
 
-  console.log({ user });
+  console.log("navbar user", user);
+  console.log("loading user context", loading);
 
   useEffect(() => {
-    if (state?.data?.success === true) {
+    console.log("navbar state", state);
+    if (state?.success === true) {
       setShowUserMenu(false);
       setIsMenuOpen(false);
       toast.success(state?.data?.message);
+      setUser(null);
       router.push("/");
     } else {
-      toast.error(state?.data?.message);
+      if (state?.message !== "") {
+        toast.error(state?.message);
+      }
     }
-  }, [state]);
+  }, [state?.success]);
+
+  // useEffect(() => {
+  //   if (user !== null) {
+  //     setUser(user);
+  //   }
+  // }, [user]);
 
   // Fungsi untuk menutup semua menu, berguna saat navigasi
   const closeAllMenus = () => {
@@ -126,7 +137,7 @@ export default function Navbar() {
           <div className="hidden md:flex">
             {loading ? (
               <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-            ) : user ? (
+            ) : user?.email ? (
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
@@ -134,7 +145,7 @@ export default function Navbar() {
                 >
                   <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
                     <span className="text-sm font-bold">
-                      {user?.full_name.charAt(0).toUpperCase()}
+                      {user?.full_name?.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <span className="hover:text-red-500">{user?.full_name}</span>
@@ -259,7 +270,7 @@ export default function Navbar() {
             <div className="pt-4 border-t border-gray-700 w-full flex flex-col items-center space-y-4">
               {loading ? (
                 <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-              ) : user ? (
+              ) : user?.email ? (
                 <>
                   <Link
                     href="/profile"

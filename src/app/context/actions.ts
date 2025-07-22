@@ -29,7 +29,7 @@ export async function checkUserSession() {
     }
 
     const result = await response.json();
-    return { user: result.data.user };
+    return { user: result.data.user, token };
   } catch (error) {
     console.error("Server action auth check failed:", error);
     return { user: null };

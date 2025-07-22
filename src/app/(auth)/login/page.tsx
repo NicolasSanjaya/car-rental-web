@@ -25,6 +25,8 @@ export default function LoginPage() {
   );
   const { setUser } = useUser();
 
+  console.log("state login", state);
+
   useEffect(() => {
     if (state) {
       setUser({
@@ -33,10 +35,10 @@ export default function LoginPage() {
         email: state?.data?.data?.user.email,
         role: state?.data?.data?.user.role,
       });
-      if (state?.data?.success === false) {
-        toast.error(state?.data?.message);
-      } else {
-        toast.success(state?.data?.message);
+      if (state?.success === false && state?.message !== "") {
+        toast.error(state?.message);
+      } else if (state?.success === true && state?.message !== "") {
+        toast.success(state?.message);
       }
       if (state?.data?.data?.user.role === "admin") {
         router.push("/dashboard");

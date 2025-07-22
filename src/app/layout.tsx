@@ -22,7 +22,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user } = await checkUserSession();
+  const { user, token } = await checkUserSession();
   return (
     <html lang="en">
       <body className={inter.className}>
@@ -35,7 +35,9 @@ export default async function RootLayout({
           closeOnClick
         />
         <AOSInit />
-        <Providers initialUser={user}>{children}</Providers>
+        <Providers initialUser={user} token={token}>
+          {children}
+        </Providers>
       </body>
     </html>
   );

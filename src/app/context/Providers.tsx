@@ -7,12 +7,14 @@ import { User } from "../types/user";
 export const Providers = ({
   children,
   initialUser,
+  token,
 }: {
   children: ReactNode;
   initialUser?: User;
+  token?: string;
 }) => {
   return (
-    <UserProvider initialUser={initialUser}>
+    <UserProvider initialUser={initialUser} token={token}>
       <FormProvider>{children}</FormProvider>
     </UserProvider>
   );
