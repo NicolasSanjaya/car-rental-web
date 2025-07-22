@@ -89,10 +89,10 @@ _Secure payment processing with various Indonesian payment methods_
 
 #### Car Management
 
-![Car Management](https://car-rental-web-weld.vercel.app/screenshots/car-management.png)
+![Car Management](https://car-rental-web-weld.vercel.app/screenshots/cars-management.png)
 _Admin interface for managing car inventory, pricing, and availability_
 
-![Add/Edit Car](https://car-rental-web-weld.vercel.app/screenshots/car-management2.png)
+![Add/Edit Car](https://car-rental-web-weld.vercel.app/screenshots/cars-management2.png)
 _Form interface for adding new cars or editing existing inventory_
 
 #### Booking Management
