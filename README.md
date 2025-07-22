@@ -14,91 +14,91 @@ A modern, responsive car rental website built with Next.js, featuring premium sp
 
 #### Login Page
 
-![Login Page](/screenshots/login.png)
+![Login Page](https://car-rental-web-weld.vercel.app/screenshots/login.png)
 _Secure user authentication with clean, modern interface_
 
 #### Register Page
 
-![Register Page](/screenshots/register.png)
-![OTP](/screenshots/otp.png)
+![Register Page](https://car-rental-web-weld.vercel.app/screenshots/register.png)
+![OTP](https://car-rental-web-weld.vercel.app/screenshots/otp.png)
 _User registration with form validation and OTP verification_
 
 ### 🏠 Main Application Pages
 
 #### Home Page
 
-![Home Page](/screenshots/home.png)
+![Home Page](https://car-rental-web-weld.vercel.app/screenshots/home.png)
 _Landing page showcasing premium sports cars with hero section and featured vehicles_
 
 #### Cars Collection
 
-![Cars Page](/screenshots/cars.png)
+![Cars Page](https://car-rental-web-weld.vercel.app/screenshots/cars.png)
 _Browse our extensive collection of luxury sports cars with filtering options_
 
 #### Car Details
 
-![Car Details](/screenshots/car-detail1.png)
-![Car Payment](/screenshots/car-detail2.png)
+![Car Details](https://car-rental-web-weld.vercel.app/screenshots/car-detail1.png)
+![Car Payment](https://car-rental-web-weld.vercel.app/screenshots/car-detail2.png)
 _Detailed car information with high-quality images, specifications, and booking options_
 
 #### About Us
 
-![About Page](/screenshots/about.png)
+![About Page](https://car-rental-web-weld.vercel.app/screenshots/about.png)
 _Company information and our commitment to premium car rental services_
 
 #### Contact Us
 
-![Contact Page](/screenshots/contact.png)
+![Contact Page](https://car-rental-web-weld.vercel.app/screenshots/contact.png)
 _Get in touch with our customer service team through multiple channels_
 
 #### Profile
 
-![Profile Page](/screenshots/profile.png)
+![Profile Page](https://car-rental-web-weld.vercel.app/screenshots/profile.png)
 _Manage your personal information_
 
 #### Bookings
 
-![Bookings Page](/screenshots/bookings.png)
+![Bookings Page](https://car-rental-web-weld.vercel.app/screenshots/bookings.png)
 _Track your current and past rental bookings with detailed status updates_
 
 ### 💳 Payment Integration
 
 #### MetaMask Payment (ETH Sepolia)
 
-![MetaMask Payment Process](/screenshots/metamask.png)
+![MetaMask Payment Process](https://car-rental-web-weld.vercel.app/screenshots/metamask.png)
 _Blockchain payment integration using Ethereum Sepolia testnet_
 
-![MetaMask Transaction Confirmation](/screenshots/metamask2.png)
-![MetaMask Transaction Confirmation 2](/screenshots/metamask3.png)
-![MetaMask Transaction Result](/screenshots/metamaskresult.png)
+![MetaMask Transaction Confirmation](https://car-rental-web-weld.vercel.app/screenshots/metamask2.png)
+![MetaMask Transaction Confirmation 2](https://car-rental-web-weld.vercel.app/screenshots/metamask3.png)
+![MetaMask Transaction Result](https://car-rental-web-weld.vercel.app/screenshots/metamaskresult.png)
 _Transaction confirmation and receipt through MetaMask wallet_
 
 #### Midtrans Payment Gateway
 
-![Midtrans Payment Selection](/screenshots/midtrans.png)
-![Midtrans Payment Selection 2](/screenshots/midtrans2.png)
-![Midtrans Payment Selection 3](/screenshots/midtrans3.png)
+![Midtrans Payment Selection](https://car-rental-web-weld.vercel.app/screenshots/midtrans.png)
+![Midtrans Payment Selection 2](https://car-rental-web-weld.vercel.app/screenshots/midtrans2.png)
+![Midtrans Payment Selection 3](https://car-rental-web-weld.vercel.app/screenshots/midtrans3.png)
 _Multiple payment methods available through Midtrans integration_
 
-![Midtrans Payment Process](/screenshots/midtrans4.png)
-![Midtrans Payment Process 2](/screenshots/midtrans5.png)
-![Midtrans Payment Result](/screenshots/midtransresult.png)
+![Midtrans Payment Process](https://car-rental-web-weld.vercel.app/screenshots/midtrans4.png)
+![Midtrans Payment Process 2](https://car-rental-web-weld.vercel.app/screenshots/midtrans5.png)
+![Midtrans Payment Result](https://car-rental-web-weld.vercel.app/screenshots/midtransresult.png)
 _Secure payment processing with various Indonesian payment methods_
 
 ### 🛠️ Admin Panel
 
 #### Car Management
 
-![Car Management](/screenshots/car-management.png)
+![Car Management](https://car-rental-web-weld.vercel.app/screenshots/car-management.png)
 _Admin interface for managing car inventory, pricing, and availability_
 
-![Add/Edit Car](/screenshots/car-management2.png)
+![Add/Edit Car](https://car-rental-web-weld.vercel.app/screenshots/car-management2.png)
 _Form interface for adding new cars or editing existing inventory_
 
 #### Booking Management
 
-![Booking Dashboard](/screenshots/dashboard.png)
-![Booking Dashboard 2](/screenshots/dashboard2.png)
+![Booking Dashboard](https://car-rental-web-weld.vercel.app/screenshots/dashboard.png)
+![Booking Dashboard 2](https://car-rental-web-weld.vercel.app/screenshots/dashboard2.png)
 _Track and manage all rental bookings with status updates_
 
 ## ⛓️ Environment Variables
